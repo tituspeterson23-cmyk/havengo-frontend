@@ -1102,6 +1102,7 @@ async function performLogin() {
                 renderProfilePage();
                 updateProfilePicCursor();
                 addNotification("\uD83D\uDD13", "Logged In", "Welcome back, " + data.user.firstname + "!");
+                fetchBackendNotifications("customer");
                 return;
             }
         } catch(e) {}
@@ -2392,6 +2393,9 @@ async function enterProviderDashboard(provider) {
         } catch(e) {}
     }
 
+    // Fetch backend notifications
+    fetchBackendNotifications("provider");
+
     renderProviderDashboard();
     addNotification("\uD83D\uDD10", "Provider Login", provider.name + " logged into dashboard");
 
@@ -2733,6 +2737,8 @@ function adminLoginSuccess() {
     addNotification("\uD83D\uDD10", "Admin Login", "Admin logged into the portal");
     // Sync from backend
     _syncAdminData();
+    // Fetch backend notifications
+    fetchBackendNotifications("admin");
     // Start admin polling every 30s
     if (window.__adminPollInterval) clearInterval(window.__adminPollInterval);
     window.__adminPollInterval = setInterval(function() {
@@ -2796,6 +2802,23 @@ async function _syncAdminData() {
                 });
             }
         }
+        // Fetch admin notifications
+        try {
+            var notifResp = await fetch(apiUrl + "/admin/notifications", { headers: headers });
+            if (notifResp.ok) {
+                var notifs = await notifResp.json();
+                if (notifs && notifs.length > 0) {
+                    for (var ni = 0; ni < notifs.length; ni++) {
+                        var n = notifs[ni];
+                        var exists = globalNotifications.some(function(gn) { return gn.text === n.message && gn.title === n.title; });
+                        if (!exists) {
+                            globalNotifications.push({ icon: n.icon || "\uD83D\uDD14", title: n.title, text: n.message });
+                        }
+                    }
+                    updateNotifCount();
+                }
+            }
+        } catch(en) {}
         // Fetch admin conversations from backend so admin sees all chats
         try {
             var convResp = await fetch(apiUrl + "/admin/chat/conversations", { headers: headers });
@@ -4193,7 +4216,32 @@ window.onload = function() {
         }
     })();
 
-    // Fetch verified providers from backend for service listing
+// Fetch backend notifications and merge into globalNotifications
+async function fetchBackendNotifications(endpoint) {
+    var jwt = window.__HAVENGO_JWT__;
+    if (!jwt) return;
+    var apiUrl = HAVENGO_BACKEND_URL + "/api";
+    try {
+        var resp = await fetch(apiUrl + "/" + endpoint + "/notifications", {
+            headers: { "Authorization": "Bearer " + jwt }
+        });
+        if (resp.ok) {
+            var notifs = await resp.json();
+            if (notifs && notifs.length > 0) {
+                for (var ni = 0; ni < notifs.length; ni++) {
+                    var n = notifs[ni];
+                    var exists = globalNotifications.some(function(gn) { return gn.text === n.message && gn.title === n.title; });
+                    if (!exists) {
+                        globalNotifications.push({ icon: n.icon || "\uD83D\uDD14", title: n.title, text: n.message });
+                    }
+                }
+                updateNotifCount();
+            }
+        }
+    } catch(e) {}
+}
+
+// Fetch verified providers from backend for service listing
     fetchVerifiedProviders();
 };
 </script>
