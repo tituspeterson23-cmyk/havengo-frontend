@@ -893,8 +893,23 @@ const services = [
 
 const serviceEmojis = {
     cleaning: "\uD83E\uDDF9", spa: "\uD83D\uDC86", family: "\uD83D\uDC76", errands: "\uD83D\uDCE6", catering: "\uD83C\uDF7D\uFE0F",
-    kids: "\uD83C\uDFA8", appliance: "\uD83D\uDD27", gardening: "\uD83C\uDF3F", hair: "\uD83D\uDC87", event: "\uD83C\uDFAA", auto: "\uD83D\uDE97"
+    kids: "\uD83C\uDFA8", appliance: "\uD83D\uDD27", gardening: "\uD83C\uDF3F", hair: "\uD83D\uDC87", event: "\uD83C\uDFAA",     auto: "\uD83D\uDE97"
 };
+
+// Helper: parse backend services CSV string into array with id/name
+function parseProviderServices(s) {
+    if (!s) return [];
+    if (Array.isArray(s)) return s;
+    return s.split(',').map(function(name) {
+        name = name.trim();
+        for (var i = 0; i < services.length; i++) {
+            if (services[i].name.toLowerCase() === name.toLowerCase()) {
+                return { id: services[i].id, name: name };
+            }
+        }
+        return { id: name.toLowerCase().replace(/[^a-z0-9]/g, '-'), name: name };
+    });
+}
 
 // Blog posts
 const blogPosts = [
@@ -1076,8 +1091,7 @@ async function performLogin() {
                     return;
                 }
             } catch(e) {}
-            alert("Invalid admin credentials. Please try again.");
-            return;
+            // Admin login failed — fall through to customer login
         }
 
         // Customer login
@@ -1102,6 +1116,7 @@ async function performLogin() {
                 updateProfilePicCursor();
                 addNotification("\uD83D\uDD13", "Logged In", "Welcome back, " + data.user.firstname + "!");
                 fetchBackendNotifications();
+                fetchCustomerBookings();
                 return;
             }
         } catch(e) {}
@@ -1138,6 +1153,7 @@ async function performLogin() {
     renderProfilePage();
     updateProfilePicCursor();
     addNotification("\uD83D\uDD13", "Logged In", "Welcome back, " + user.firstname + "!");
+    fetchCustomerBookings();
     saveAppState();
 }
 
@@ -1147,6 +1163,7 @@ function logout() {
         userNotificationsMap[currentUser.email] = globalNotifications.slice();
     }
     globalNotifications = [];
+    window.__HAVENGO_JWT__ = null;
     customerBitmoji = null;
     profilePicSrc = "https://images.unsplash.com/photo-1531123897720-8f129e1688f7?w=400";
     document.getElementById("profile-pic").src = profilePicSrc;
@@ -1844,6 +1861,10 @@ function navigateTo(page) {
     window.scrollTo({ top: 0, behavior: "smooth" });
     window.__currentPage = page;
     saveAppState();
+    // Sync customer bookings from backend when navigating to bookings tab
+    if (page === "bookings" && currentUser && window.__HAVENGO_JWT__) {
+        fetchCustomerBookings();
+    }
 }
 
 var menuManuallyOpened = false;
@@ -2176,6 +2197,32 @@ async function placeOrder(event) {
             var orderData = await orderResp.json();
             if (orderData.success) {
                 userBalance -= finalPrice;
+                // Add to local arrays so customer sees it immediately
+                var booking = {
+                    id: orderData.taskId || orderData.id || Date.now(),
+                    serviceId: currentService.id,
+                    serviceName: currentService.name,
+                    price: finalPrice,
+                    date: date, time: time, address: address, instructions: instructions,
+                    status: "Pending",
+                    customerName: currentUser ? (currentUser.name || currentUser.firstname + " " + currentUser.lastname) : "Guest User",
+                    customerPhone: currentUser ? currentUser.phone : "+256 777 062 518",
+                    providerName: assignedProvider
+                };
+                bookings.push(booking);
+                providerTasks.push({
+                    id: booking.id,
+                    serviceName: booking.serviceName,
+                    customerName: booking.customerName,
+                    customerPhone: booking.customerPhone,
+                    address: booking.address,
+                    date: booking.date,
+                    time: booking.time,
+                    price: booking.price,
+                    status: "pending_confirmation",
+                    instructions: booking.instructions,
+                    providerName: assignedProvider
+                });
                 closeModal("checkout-modal");
                 renderBookings();
                 addNotification("\uD83D\uDCCB", "New Booking Placed", currentService.name + " on " + date + " at " + time);
@@ -2239,6 +2286,53 @@ async function placeOrder(event) {
     addActivity("booking", "Booked " + currentService.name + " for " + date);
     alert("Order placed successfully! Your provider will be notified.");
     saveAppState();
+}
+
+// Fetch customer bookings from backend for cross-browser sync
+async function fetchCustomerBookings() {
+    if (!window.__HAVENGO_JWT__ || !currentUser) return;
+    try {
+        var resp = await fetch(HAVENGO_BACKEND_URL + "/api/customer/bookings", {
+            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
+        });
+        if (resp.ok) {
+            var data = await resp.json();
+            var allTasks = (data.active || []).concat(data.completed || []);
+            if (allTasks.length > 0) {
+                for (var bi = 0; bi < allTasks.length; bi++) {
+                    var b = allTasks[bi];
+                    var exists = bookings.some(function(lb) { return lb.id === b.id || lb.id === b.task_id; });
+                    if (!exists) {
+                        var bookingDate = "", bookingTime = "";
+                        if (b.details) {
+                            var dateMatch = b.details.match(/Date:\s*([^|]+)/);
+                            var timeMatch = b.details.match(/Time:\s*([^|]+)/);
+                            if (dateMatch) bookingDate = dateMatch[1].trim();
+                            if (timeMatch) bookingTime = timeMatch[1].trim();
+                        }
+                        var status = b.status || "Pending";
+                        if (status === "pending_confirmation") status = "Pending";
+                        else if (status === "active") status = "In Progress";
+                        bookings.push({
+                            id: b.id || b.task_id,
+                            serviceId: b.service_id || "",
+                            serviceName: b.service_name || "Service",
+                            price: b.price || 0,
+                            date: bookingDate,
+                            time: bookingTime,
+                            address: b.address || "",
+                            status: status,
+                            customerName: currentUser ? currentUser.name : "",
+                            customerPhone: currentUser ? currentUser.phone : "",
+                            providerName: b.provider_name || "",
+                            details: b.details || ""
+                        });
+                    }
+                }
+                renderBookings();
+            }
+        }
+    } catch(e) {}
 }
 
 function renderBookings() {
@@ -2306,13 +2400,14 @@ async function loginAsProvider() {
                     firstname: p.firstname,
                     lastname: p.lastname,
                     service: (typeof p.services === "string" ? p.services : "General Services"),
-                    location: "",
+                    location: p.location || "",
                     phone: p.phone,
                     email: p.email,
                     password: "",
                     bitmoji: p.bitmoji || "\uD83D\uDD27",
-                    bio: "",
-                    verified: true
+                    bio: p.bio || "",
+                    verified: true,
+                    business_name: p.business_name || ""
                 };
                 enterProviderDashboard(currentLoggedProvider);
                 return;
@@ -2379,7 +2474,7 @@ async function enterProviderDashboard(provider) {
     document.getElementById("provider-login-screen").classList.add("hidden");
     document.getElementById("provider-dashboard").classList.remove("hidden");
     document.getElementById("provider-header").classList.remove("hidden");
-    document.getElementById("logged-provider-name").textContent = provider.name;
+    document.getElementById("logged-provider-name").textContent = provider.business_name || provider.name;
     document.getElementById("logged-provider-service").textContent = provider.service + " \u2022 " + provider.location;
     document.getElementById("prov-login-id").value = "";
     document.getElementById("prov-login-pass").value = "";
@@ -2798,9 +2893,13 @@ async function _syncAdminData() {
                     phone: p.phone,
                     businessName: p.business_name,
                     service: p.services,
+                    services: parseProviderServices(p.services),
                     bitmoji: p.bitmoji,
                     verified: p.verified === 1,
-                    total_earnings: p.total_earnings
+                    total_earnings: p.total_earnings,
+                    location: p.location || "",
+                    bio: p.bio || "",
+                    experience: p.experience || 0
                 };
             });
         }
@@ -2864,7 +2963,7 @@ async function _syncAdminData() {
                     if (msgResp.ok) {
                         var msgs = await msgResp.json();
                         chatConversations[cid] = msgs.map(function(m) {
-                            return { text: m.message, sender: m.sender === "Admin" ? "admin" : m.sender, time: new Date(m.created_at).getTime(), created_at: m.created_at };
+                            return { id: m.id, text: m.message, sender: m.sender === "Admin" ? "admin" : m.sender, time: new Date(m.created_at).getTime(), created_at: m.created_at };
                         });
                     }
                 }
@@ -2879,6 +2978,7 @@ function logoutAdmin() {
     if (!confirm("Are you sure you want to logout?")) return;
     userNotificationsMap["admin"] = globalNotifications.slice();
     if (window.__adminPollInterval) clearInterval(window.__adminPollInterval);
+    window.__HAVENGO_JWT__ = null;
     currentAdmin = null;
     globalNotifications = [];
     document.getElementById("admin-dashboard").classList.add("hidden");
@@ -2892,6 +2992,7 @@ function logoutProvider() {
         userNotificationsMap[currentLoggedProvider.email] = globalNotifications.slice();
     }
     if (window.__providerPollInterval) clearInterval(window.__providerPollInterval);
+    window.__HAVENGO_JWT__ = null;
     currentLoggedProvider = null;
     globalNotifications = [];
     document.getElementById("provider-login-screen").classList.remove("hidden");
@@ -2947,7 +3048,8 @@ function renderAdminProviders() {
     for (var i = 0; i < registeredProviders.length; i++) {
         var p = registeredProviders[i];
         var isVerified = p.verified ? "<span class=\"text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full\">Verified</span>" : "<span class=\"text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full\">Pending</span>";
-        html += "<div class=\"bg-white rounded-2xl p-5 shadow flex justify-between items-center\"><div><p class=\"font-semibold\">" + p.name + "</p><p class=\"text-sm text-gray-500\">" + (p.email || "") + " \u2022 " + (p.phone || "") + "</p><p class=\"text-xs text-gray-400\">" + (p.service || "General") + " \u2022 " + (p.location || "") + "</p></div><div>" + isVerified + " <button onclick=\"adminDeleteProvider(" + p.id + ")\" class=\"text-xs bg-red-500 text-white px-2 py-1 rounded-full ml-2 hover:bg-red-600\"><i class=\"fa-solid fa-trash-can\"></i> Delete</button></div></div>";
+        var displayName = p.business_name || p.businessName || p.name;
+        html += "<div class=\"bg-white rounded-2xl p-5 shadow flex justify-between items-center\"><div><p class=\"font-semibold\">" + displayName + "</p><p class=\"text-sm text-gray-500\">" + (p.email || "") + " \u2022 " + (p.phone || "") + "</p><p class=\"text-xs text-gray-400\">" + (p.service || "General") + " \u2022 " + (p.location || "") + "</p></div><div>" + isVerified + " <button onclick=\"adminDeleteProvider(" + p.id + ")\" class=\"text-xs bg-red-500 text-white px-2 py-1 rounded-full ml-2 hover:bg-red-600\"><i class=\"fa-solid fa-trash-can\"></i> Delete</button></div></div>";
     }
     list.innerHTML = html;
 }
@@ -2963,7 +3065,8 @@ function renderAdminVerification() {
     var html = "";
     for (var i = 0; i < unverified.length; i++) {
         var p = unverified[i];
-        html += "<div class=\"bg-white rounded-2xl p-5 shadow\"><div class=\"flex justify-between items-start\"><div><p class=\"font-semibold\">" + p.name + "</p><p class=\"text-sm text-gray-500\">" + (p.email || "") + " \u2022 " + (p.phone || "") + "</p><p class=\"text-sm text-gray-500\">Service: " + (p.service || "General") + " \u2022 " + (p.location || "") + "</p>" + (p.bio ? "<p class=\"text-xs text-gray-400 mt-1\">" + p.bio + "</p>" : "") + "</div><div class=\"flex gap-2\"><button onclick=\"verifyProvider(" + p.id + ")\" class=\"bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-check\"></i> Verify</button><button onclick=\"rejectProvider(" + p.id + ")\" class=\"bg-red-500 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-times\"></i> Reject</button></div></div></div>";
+        var displayName = p.business_name || p.businessName || p.name;
+        html += "<div class=\"bg-white rounded-2xl p-5 shadow\"><div class=\"flex justify-between items-start\"><div><p class=\"font-semibold\">" + displayName + "</p><p class=\"text-sm text-gray-500\">" + (p.email || "") + " \u2022 " + (p.phone || "") + "</p><p class=\"text-sm text-gray-500\">Service: " + (p.service || "General") + " \u2022 " + (p.location || "") + "</p>" + (p.bio ? "<p class=\"text-xs text-gray-400 mt-1\">" + p.bio + "</p>" : "") + "</div><div class=\"flex gap-2\"><button onclick=\"verifyProvider(" + p.id + ")\" class=\"bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-check\"></i> Verify</button><button onclick=\"rejectProvider(" + p.id + ")\" class=\"bg-red-500 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-times\"></i> Reject</button></div></div></div>";
     }
     list.innerHTML = html;
 }
@@ -3250,7 +3353,8 @@ function renderCustomerAdminMessages() {
     for (var i = 0; i < msgs.length; i++) {
         var m = msgs[i];
         var isSent = m.sender === "customer";
-        html += "<div class=\"flex " + (isSent ? "justify-end" : "justify-start") + "\"><div class=\"" + (isSent ? "bg-emerald-600 text-white" : "bg-gray-100") + " rounded-2xl px-4 py-3 max-w-xs\"><p class=\"text-sm\">" + m.text + "</p><p class=\"text-xs mt-1 " + (isSent ? "text-emerald-100" : "text-gray-400") + "\">" + new Date(m.time).toLocaleTimeString() + "</p></div></div>";
+        var msgId = m.id || ("cadm_" + i + "_" + m.time);
+        html += "<div class=\"flex " + (isSent ? "justify-end" : "justify-start") + "\"><div class=\"" + (isSent ? "bg-emerald-600 text-white" : "bg-gray-100") + " rounded-2xl px-4 py-3 max-w-xs relative group\"><button onclick=\"deleteChatMessage('" + chatId + "','" + msgId + "'," + i + ")\" class=\"absolute -top-2 -right-2 text-xs text-red-400 hover:text-red-600 bg-white rounded-full w-5 h-5 flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity\" title=\"Delete\"><i class=\"fa-solid fa-times\"></i></button><p class=\"text-sm\">" + m.text + "</p><p class=\"text-xs mt-1 " + (isSent ? "text-emerald-100" : "text-gray-400") + "\">" + new Date(m.time).toLocaleTimeString() + "</p></div></div>";
     }
     container.innerHTML = html;
     container.scrollTop = container.scrollHeight;
@@ -3469,13 +3573,43 @@ function renderChatMessages(messages, currentRole) {
         var isSent = m.sender === currentRole;
         var bubbleClass = isSent ? "chat-bubble-sent ml-auto" : "chat-bubble-received";
         var timeClass = isSent ? "text-emerald-100" : "text-gray-400";
-        html += "<div class=\"chat-bubble " + bubbleClass + "\">" +
-            m.text +
+        var msgId = m.id || ("msg_" + i + "_" + m.time);
+        html += "<div class=\"chat-bubble " + bubbleClass + "\" data-msg-id=\"" + msgId + "\">" +
+            "<div class=\"flex items-start justify-between gap-2\">" +
+            "<div>" + m.text + "</div>" +
+            "<button onclick=\"deleteChatMessage('" + currentChatTaskId + "','" + msgId + "'," + i + ")\" class=\"text-xs text-red-400 hover:text-red-600 flex-shrink-0 ml-1\" title=\"Delete\"><i class=\"fa-solid fa-times\"></i></button>" +
+            "</div>" +
             "<div class=\"text-xs mt-1 " + timeClass + "\">" + new Date(m.time).toLocaleTimeString() + "</div>" +
             "</div>";
     }
     container.innerHTML = html;
     container.scrollTop = container.scrollHeight;
+}
+
+async function deleteChatMessage(convId, msgId, index) {
+    if (!confirm("Delete this message?")) return;
+    var jwt = window.__HAVENGO_JWT__;
+    // Try backend deletion
+    if (jwt && convId && msgId && !msgId.startsWith("msg_")) {
+        try {
+            var endpoint = currentAdmin ? "/admin/chat/" : "/chat/";
+            await fetch(HAVENGO_BACKEND_URL + "/api" + endpoint + encodeURIComponent(convId) + "/message/" + msgId, {
+                method: "DELETE", headers: { "Authorization": "Bearer " + jwt }
+            });
+        } catch(e) {}
+    }
+    // Remove locally
+    if (chatConversations[convId] && chatConversations[convId][index]) {
+        chatConversations[convId].splice(index, 1);
+        syncChatToStorage(convId);
+        var currentRole = currentAdmin ? "admin" : (currentLoggedProvider ? "provider" : "customer");
+        if (convId && (convId.indexOf("customer-admin") === 0 || convId.indexOf("provider-admin") === 0)) {
+            renderCustomerAdminMessages();
+        }
+        if (document.getElementById("chat-messages")) {
+            renderChatMessages(chatConversations[convId], currentRole);
+        }
+    }
 }
 
 function openChatWithProvider(taskId) {
@@ -3600,21 +3734,25 @@ async function loadChatFromStorage(taskId) {
             if (resp.ok) {
                 var backendMsgs = await resp.json();
                 if (backendMsgs.length > 0) {
-                    if (!chatConversations[taskId]) chatConversations[taskId] = [];
-                    var merged = [];
-                    var existingIds = {};
-                    for (var ei = 0; ei < chatConversations[taskId].length; ei++) {
-                        var em = chatConversations[taskId][ei];
-                        var key = em.text + "_" + em.sender + "_" + (em.created_at || em.time || "");
-                        existingIds[key] = true;
-                    }
-                    for (var bi = 0; bi < backendMsgs.length; bi++) {
-                        var bm = backendMsgs[bi];
-                        var bKey = bm.message + "_" + bm.sender + "_" + bm.created_at;
-                        if (!existingIds[bKey]) {
-                            chatConversations[taskId].push({ text: bm.message, sender: bm.sender === "Admin" ? "admin" : bm.sender, time: new Date(bm.created_at).getTime(), created_at: bm.created_at });
+                    // Build set of local (text+sender) to preserve unsent messages
+                    var localOnly = [];
+                    if (chatConversations[taskId]) {
+                        var backendSet = {};
+                        for (var bi = 0; bi < backendMsgs.length; bi++) {
+                            var bm = backendMsgs[bi];
+                            backendSet[bm.message + "_" + bm.sender] = true;
+                        }
+                        for (var li = 0; li < chatConversations[taskId].length; li++) {
+                            var lm = chatConversations[taskId][li];
+                            if (!backendSet[lm.text + "_" + lm.sender]) {
+                                localOnly.push(lm);
+                            }
                         }
                     }
+                    // Replace with backend messages + local-only messages
+                    chatConversations[taskId] = backendMsgs.map(function(bm) {
+                        return { id: bm.id, text: bm.message, sender: bm.sender === "Admin" ? "admin" : bm.sender, time: new Date(bm.created_at).getTime(), created_at: bm.created_at };
+                    }).concat(localOnly);
                     var currentRole = currentAdmin ? "admin" : (currentLoggedProvider ? "provider" : "customer");
                     renderChatMessages(chatConversations[taskId], currentRole);
                     return;
@@ -3819,7 +3957,7 @@ async function submitProviderApplication(event) {
                     firstname: firstname, lastname: lastname, email: email, phone: phone,
                     businessName: businessName, services: serviceNames,
                     password: password, confirmPassword: confirmPassword,
-                    bitmoji: selectedBitmoji
+                    bitmoji: selectedBitmoji, location: location, bio: bio, experience: exp
                 })
             });
             var data = await resp.json();
@@ -4079,8 +4217,8 @@ async function fetchVerifiedProviders() {
         var resp = await fetch(apiUrl + "/providers/verified");
         if (resp.ok) {
             var data = await resp.json();
+            var backendEmails = {};
             if (data && data.length > 0) {
-                var backendEmails = {};
                 for (var i = 0; i < data.length; i++) {
                     var bp = data[i];
                     backendEmails[bp.email] = true;
@@ -4089,24 +4227,27 @@ async function fetchVerifiedProviders() {
                         if (registeredProviders[j].email === bp.email) { existing = true; break; }
                     }
                     if (!existing) {
-                        var svcs = bp.services ? JSON.parse(bp.services) : [];
+                        var svcs = parseProviderServices(bp.services);
                         registeredProviders.push({
                             id: bp.id, name: bp.business_name || bp.name, business_name: bp.business_name,
                             email: bp.email, phone: bp.phone || "", firstname: bp.name ? bp.name.split(" ")[0] : "",
                             lastname: bp.name ? bp.name.split(" ").slice(1).join(" ") : "",
                             services: svcs, bitmoji: bp.bitmoji || "\uD83D\uDC64",
-                            verified: true, jobs: bp.jobs || 0
+                            verified: true, jobs: bp.jobs || 0,
+                            location: bp.location || "", bio: bp.bio || ""
                         });
                     }
                 }
-                // Remove providers no longer verified by backend
-                for (var ri = registeredProviders.length - 1; ri >= 0; ri--) {
-                    if (registeredProviders[ri].email && !backendEmails[registeredProviders[ri].email]) {
-                        registeredProviders.splice(ri, 1);
-                    }
-                }
-                renderAllProviderLists();
             }
+            // Remove providers no longer verified by backend
+            for (var ri = registeredProviders.length - 1; ri >= 0; ri--) {
+                var rp = registeredProviders[ri];
+                // Only remove providers that have an email (backend-sourced) but are not in backend response
+                if (rp.email && !backendEmails[rp.email] && rp.id) {
+                    registeredProviders.splice(ri, 1);
+                }
+            }
+            renderAllProviderLists();
         }
     } catch(e) {}
 }
@@ -4309,6 +4450,7 @@ window.onload = function() {
             renderProfilePage();
             updateProfilePicCursor();
             fetchBackendNotifications();
+            fetchCustomerBookings();
         }
         renderAllProviderLists();
         // Restore last visited page
@@ -4343,6 +4485,11 @@ window.onload = function() {
 
     // Poll verified providers every 30s for cross-browser sync
     setInterval(fetchVerifiedProviders, 30000);
+
+    // Poll customer bookings every 30s when logged in
+    setInterval(function() {
+        if (currentUser && window.__HAVENGO_JWT__) fetchCustomerBookings();
+    }, 30000);
 };
 </script>
 </body>
