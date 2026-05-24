@@ -405,7 +405,7 @@
     </div>
     <div id="provider-login-screen">
         <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl p-8">
-            <div class="text-center mb-8"><div class="w-20 h-20 mx-auto bg-emerald-100 rounded-2xl flex items-center justify-center text-4xl mb-4">??</div><h3 class="text-2xl font-bold">Provider Login</h3><p class="text-gray-500">Access your tasks and earnings</p></div>
+            <div class="text-center mb-8"><div class="w-20 h-20 mx-auto bg-emerald-100 rounded-2xl flex items-center justify-center text-4xl mb-4"><i class="fa-solid fa-toolbox text-emerald-600"></i></div><h3 class="text-2xl font-bold">Provider Login</h3><p class="text-gray-500">Access your tasks and earnings</p></div>
             <div class="space-y-5">
                 <div><label class="font-medium block mb-2">Phone Number or Email</label><input id="prov-login-id" type="text" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" placeholder="0777 062 518"></div>
                 <div><label class="font-medium block mb-2">Password</label><input id="prov-login-pass" type="password" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
@@ -460,7 +460,7 @@
     <div class="grid md:grid-cols-2 gap-6"><div><label class="font-medium block mb-2">Full Name <span class="text-red-500">*</span></label><input type="text" id="prov-name" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div><div><label class="font-medium block mb-2">Phone Number <span class="text-red-500">*</span></label><input type="tel" id="prov-phone" required pattern="0[0-9]{9}" title="Enter a valid 10-digit phone number starting with 0" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div></div>
     <div><label class="font-medium block mb-2">Email Address</label><input type="email" id="prov-email" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
     <div><label class="font-medium block mb-2">Business Name <span class="text-red-500">*</span></label><input type="text" id="prov-business" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
-    <div><label class="font-medium block mb-2">Business Bitmoji <span class="text-red-500">*</span></label><div onclick="toggleProviderBitmojiPicker()" id="bitmoji-select" class="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-4xl cursor-pointer hover:border-emerald-600 hover:bg-emerald-50 transition-all">??</div><div id="provider-bitmoji-picker" class="hidden mt-3 bg-white rounded-3xl shadow-2xl p-4 border z-10" style="width:320px;position:relative;"><div class="flex justify-between items-center mb-2"><span class="text-sm font-medium">Choose Bitmoji</span><button type="button" onclick="event.stopPropagation();document.getElementById('provider-bitmoji-picker').classList.add('hidden')" class="text-gray-400 text-xl">&times;</button></div><div class="grid grid-cols-6 gap-2 text-2xl" id="provider-bitmoji-grid"></div></div></div>
+    <div><label class="font-medium block mb-2">Business Bitmoji <span class="text-red-500">*</span></label><div onclick="toggleProviderBitmojiPicker()" id="bitmoji-select" class="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-4xl cursor-pointer hover:border-emerald-600 hover:bg-emerald-50 transition-all">🔧</div><div id="provider-bitmoji-picker" class="hidden mt-3 bg-white rounded-3xl shadow-2xl p-4 border z-10" style="width:320px;position:relative;"><div class="flex justify-between items-center mb-2"><span class="text-sm font-medium">Choose Bitmoji</span><button type="button" onclick="event.stopPropagation();document.getElementById('provider-bitmoji-picker').classList.add('hidden')" class="text-gray-400 text-xl">&times;</button></div><div class="grid grid-cols-6 gap-2 text-2xl" id="provider-bitmoji-grid"></div></div></div>
     <div><label class="font-medium block mb-2">Service Categories <span class="text-red-500">*</span></label><select multiple id="multi-service-select" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600 h-40"></select></div>
     <div class="grid md:grid-cols-3 gap-6"><div><label class="font-medium block mb-2">Years of Experience <span class="text-red-500">*</span></label><input type="number" id="prov-exp" min="0" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div><div><label class="font-medium block mb-2">Create Password <span class="text-red-500">*</span></label><input type="password" id="prov-password" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" placeholder="Minimum 6 characters"></div><div><label class="font-medium block mb-2">Confirm Password <span class="text-red-500">*</span></label><input type="password" id="prov-confirm-password" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" placeholder="Repeat password"></div></div>
     <div><label class="font-medium block mb-2">Upload National ID / Passport Photo</label><input type="file" id="prov-id" accept="image/*" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
@@ -669,7 +669,7 @@
 <div><label class="font-medium">Selected Service</label><div id="modal-service" class="mt-2 bg-gray-100 rounded-2xl p-4"></div></div>
 <div><label class="font-medium">Estimated Price</label><div id="modal-price" class="mt-2 bg-gray-100 rounded-2xl p-4 font-bold text-emerald-600"></div></div>
 <div id="dynamic-fields" class="space-y-6"></div>
-<div class="pt-4 border-t"><button onclick="alert('Chat will be available after placing your order.')" type="button" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-emerald-600 text-emerald-700 py-4 rounded-2xl font-semibold hover:bg-emerald-50"><i class="fa-solid fa-comments"></i><span>?? Chat with Provider</span></button></div>
+<div class="pt-4 border-t"><button onclick="alert('Chat will be available after placing your order.')" type="button" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-emerald-600 text-emerald-700 py-4 rounded-2xl font-semibold hover:bg-emerald-50"><i class="fa-solid fa-comments"></i><span>💬 Chat with Provider</span></button></div>
 <div class="grid md:grid-cols-2 gap-5"><div><label class="font-medium">Select Date</label><input type="date" id="booking-date" required class="w-full mt-2 border rounded-2xl px-4 py-4 outline-none"></div><div><label class="font-medium">Select Time</label><input type="time" id="booking-time" required class="w-full mt-2 border rounded-2xl px-4 py-4 outline-none"></div></div>
 <div><label class="font-medium block mb-2">Delivery Address</label>
 <div class="flex gap-2">
@@ -773,7 +773,7 @@
 <div id="application-fee-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 modal p-5">
 <div class="bg-white max-w-md w-full rounded-3xl p-8">
     <h3 class="text-2xl font-bold mb-6 text-center">Application Fee</h3>
-    <div class="text-center mb-8"><div class="text-6xl mb-4">??</div><p class="text-4xl font-bold text-emerald-600">50,000 UGX</p><p class="text-gray-500">One-time virtual verification fee</p></div>
+    <div class="text-center mb-8"><div class="text-6xl mb-4">🛡️</div><p class="text-4xl font-bold text-emerald-600">50,000 UGX</p><p class="text-gray-500">One-time virtual verification fee</p></div>
     <button onclick="completeApplicationPayment()" class="w-full bg-emerald-600 text-white py-4 rounded-3xl font-semibold mb-3">Pay with MTN MoMo / Airtel</button>
     <button onclick="closeModal('application-fee-modal')" class="w-full border py-4 rounded-3xl font-semibold">Cancel</button>
 </div></div>
@@ -4449,7 +4449,7 @@ function populateBitmojiSelect() {
         container.classList.remove("border-dashed", "border-gray-300");
         container.classList.add("border-2", "border-emerald-600", "bg-emerald-50");
     } else {
-        container.textContent = "??";
+        container.textContent = "🔧";
         container.classList.add("border-dashed", "border-gray-300");
         container.classList.remove("border-emerald-600", "bg-emerald-50");
     }
