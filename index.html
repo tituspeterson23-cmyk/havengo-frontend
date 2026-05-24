@@ -394,7 +394,7 @@
     <div class="flex items-center justify-between mb-8">
         <div><h2 class="text-4xl font-bold">HavenGo Tasks</h2><p class="text-gray-500">Service Provider Portal</p></div>
         <div id="provider-header" class="hidden items-center gap-3">
-            <div class="text-right"><p class="font-medium" id="logged-provider-name">Aisha Nabbanja</p><p class="text-xs text-emerald-600" id="logged-provider-service">Deep Cleaning � Kampala</p></div>
+            <div class="text-right"><p class="font-medium" id="logged-provider-name">Aisha Nabbanja</p><p class="text-xs text-emerald-600" id="logged-provider-service">Deep Cleaning • Kampala</p></div>
             <button onclick="openProviderAdminChat()" class="text-sm bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-2xl mr-2"><i class="fa-solid fa-comment"></i> Admin</button>
             <button onclick="requestProviderAccountDeletion()" class="text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-2xl mr-2"><i class="fa-solid fa-trash-can"></i> Delete</button>
             <button onclick="logoutProvider()" class="text-sm bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-2xl">Logout</button>
@@ -2534,7 +2534,7 @@ async function placeOrder(event) {
             return;
         }
         if (orderData.session_expired && currentUser) {
-            // Backend user record was removed (e.g. DB reset) � restore silently and retry
+            // Backend user record was removed (e.g. DB reset) — restore silently and retry
             var reAuthOk = false;
             if (currentUser._plainPass) {
                 try {
@@ -3831,7 +3831,7 @@ function startTracking(bookingId) {
         window.__trackingMap = L.map('tracking-map').setView([lat, lng], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '� OpenStreetMap'
+            attribution: '© OpenStreetMap'
         }).addTo(window.__trackingMap);
         // Customer marker (blue)
         L.circleMarker([lat, lng], { radius: 10, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.5 }).addTo(window.__trackingMap).bindPopup('Your Location');
@@ -4818,7 +4818,7 @@ async function loadReviews() {
             }
         } catch(e) {}
     }
-    // No backend � reviews already loaded from localStorage
+    // No backend — reviews already loaded from localStorage
     renderReviews();
 }
 
@@ -5108,7 +5108,7 @@ window.onload = function() {
     // Save on page unload
     window.addEventListener("beforeunload", function() { saveAppState(); });
 
-    // Backend connectivity � uses HAVENGO_BACKEND_URL (set at top of script)
+    // Backend connectivity — uses HAVENGO_BACKEND_URL (set at top of script)
     (async function() {
         var apiUrl = HAVENGO_BACKEND_URL + "/api";
         try {
