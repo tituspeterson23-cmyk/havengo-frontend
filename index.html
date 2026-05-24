@@ -1254,8 +1254,11 @@ async function performLogin() {
                     adminLoginSuccess();
                     return;
                 }
-            } catch(e) {}
-            // Admin login failed — fall through to customer login
+                alert(adminData.error || "Invalid admin credentials");
+            } catch(e) {
+                alert("Network error. Could not verify admin credentials.");
+            }
+            return; // Don't fall through to customer login for admin credentials
         }
 
         // Customer login
@@ -2218,7 +2221,6 @@ function toggleDarkMode() {
     document.documentElement.classList.toggle("dark");
     var stars = document.getElementById("stars-container");
     if (stars) stars.classList.toggle("hidden");
-    localStorage.setItem("havengo-dark", document.documentElement.classList.contains("dark") ? "1" : "0");
 }
 
 function createStars() {
@@ -2270,7 +2272,6 @@ function setTheme(theme) {
     if (theme !== "default") document.documentElement.classList.add("theme-" + theme);
     var menu = document.getElementById("theme-menu");
     if (menu) menu.classList.add("hidden");
-    localStorage.setItem("havengo-theme", theme);
 }
 
 function searchServices() {
@@ -3777,25 +3778,15 @@ function renderAdminChat() {
             html += "<div class=\"bg-white rounded-2xl p-4 shadow flex justify-between items-center mb-2 border-l-4 border-amber-600\"><div><p class=\"font-semibold\">" + p.name + "</p><p class=\"text-xs text-gray-500\">" + (p.service || "Provider") + " \u2022 " + (p.location || "") + "</p></div><button onclick=\"openAdminProviderChat('" + provEmail + "','" + p.name.replace(/'/g,"\\'") + "')\" class=\"bg-amber-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-comment\"></i> Chat</button></div>";
         }
     }
-    // Task conversations
-    var allTaskIds = [];
-    for (var i = 0; i < providerTasks.length; i++) {
-        if (allTaskIds.indexOf(providerTasks[i].id) === -1) allTaskIds.push(providerTasks[i].id);
+    // Task conversations (only show from backend-synced chat data, not stale local state)
+    var taskChatKeys = [];
+    for (var key in chatConversations) {
+        if (!isNaN(parseInt(key)) && taskChatKeys.indexOf(key) === -1) taskChatKeys.push(key);
     }
-    for (var i = 0; i < completedTasks.length; i++) {
-        if (allTaskIds.indexOf(completedTasks[i].id) === -1) allTaskIds.push(completedTasks[i].id);
-    }
-    if (allTaskIds.length > 0) {
+    if (taskChatKeys.length > 0) {
         html += "<h4 class=\"font-semibold mb-3 mt-6 text-gray-700\">Task Conversations</h4>";
-        for (var i = 0; i < allTaskIds.length; i++) {
-            var taskId = allTaskIds[i];
-            var task = null;
-            for (var j = 0; j < providerTasks.length; j++) {
-                if (providerTasks[j].id === taskId) { task = providerTasks[j]; break; }
-            }
-            if (!task) { for (var j = 0; j < completedTasks.length; j++) { if (completedTasks[j].id === taskId) { task = completedTasks[j]; break; } } }
-            if (!task) continue;
-            html += "<div class=\"bg-white rounded-2xl p-4 shadow flex justify-between items-center\"><div><p class=\"font-semibold\">" + (task.serviceName || "Task") + "</p><p class=\"text-xs text-gray-500\">" + (task.customerName || "Customer") + " \u2022 " + (task.providerName || "Provider") + "</p></div><button onclick=\"openAdminChat(" + taskId + ")\" class=\"bg-amber-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-comment\"></i> Chat</button></div>";
+        for (var i = 0; i < taskChatKeys.length; i++) {
+            html += "<div class=\"bg-white rounded-2xl p-4 shadow flex justify-between items-center mb-2 border-l-4 border-gray-400\"><div><p class=\"font-semibold\">Task #" + taskChatKeys[i] + "</p></div><button onclick=\"openAdminChat(" + taskChatKeys[i] + ")\" class=\"bg-amber-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-comment\"></i> Chat</button></div>";
         }
     }
     if (html === "") {
@@ -4781,7 +4772,7 @@ function renderAllProviderLists() {
     var providerMap = {
         "cleaning-providers": [], "spa-providers": [], "family-providers": [], "errands-providers": [],
         "catering-providers": [], "kids-providers": [], "appliance-providers": [], "gardening-providers": [],
-        "hair-providers": [], "event-providers": [], "auto-providers": []
+        "hair-providers": [], "event-providers": [], "auto-providers": [], "nursing-providers": []
     };
 
     // Calculate provider ratings from customer reviews
@@ -5157,17 +5148,6 @@ async function fetchBackendNotifications() {
 // ============================================================
 
 window.onload = function() {
-    // Restore dark mode
-    if (localStorage.getItem("havengo-dark") === "1") {
-        document.documentElement.classList.add("dark");
-        var stars = document.getElementById("stars-container");
-        if (stars) stars.classList.remove("hidden");
-    }
-    // Restore theme
-    var savedTheme = localStorage.getItem("havengo-theme");
-    if (savedTheme && savedTheme !== "default") {
-        document.documentElement.classList.add("theme-" + savedTheme);
-    }
     createStars();
     startHeroSlider();
     renderBlogPosts();
@@ -5246,8 +5226,8 @@ window.onload = function() {
             updateNotifCount();
         }
         renderAllProviderLists();
-        // Always start from home
-        navigateTo("home");
+        // Restore last viewed page (default to home)
+        navigateTo(window.__currentPage || "home");
     })();
 
     // Auto-save every 10 seconds
