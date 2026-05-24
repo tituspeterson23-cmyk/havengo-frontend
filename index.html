@@ -1280,12 +1280,10 @@ async function performLogin() {
                 currentUser = data.user;
                 currentUser._plainPass = password;
                 window.__HAVENGO_JWT__ = data.token;
-                // Sync to local users array for offline fallback
-                var existing = allUsers.find(function(u) { return u.email === data.user.email; });
-                if (!existing) {
-                    allUsers.push({ firstname: data.user.firstname, lastname: data.user.lastname, phone: data.user.phone, email: data.user.email, password: "", name: data.user.firstname + " " + data.user.lastname });
-                }
                 globalNotifications = [];
+                bookings = [];
+                pendingPayments = [];
+                demoPendingPayments = [];
                 closeAuthModal();
                 updateProfileWithUser();
                 renderProfilePage();
@@ -1296,66 +1294,10 @@ async function performLogin() {
                 return;
             }
             if (data.user_not_found) {
-                // Backend user was wiped — restore from local storage
-                var storedUser = allUsers.find(function(u) { return u.email === identifier || u.phone === identifier; });
-                if (storedUser) {
-                    try {
-                        var retryResp = await fetch(apiUrl + "/auth/login", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                identifier: identifier, password: password,
-                                restoring: true,
-                                firstname: storedUser.firstname,
-                                lastname: storedUser.lastname,
-                                phone: storedUser.phone,
-                                bitmoji: storedUser.bitmoji || "\uD83D\uDE0A"
-                            })
-                        });
-                        var retryData = await retryResp.json();
-                        if (retryData.success) {
-                            currentUser = retryData.user;
-                            currentUser._plainPass = password;
-                            window.__HAVENGO_JWT__ = retryData.token;
-                            closeAuthModal();
-                            updateProfileWithUser();
-                            renderProfilePage();
-                            updateProfilePicCursor();
-                            addNotification("\uD83D\uDD13", "Account Restored", "Your account was restored from local backup after a server data reset. All your information has been recovered.");
-                            fetchBackendNotifications();
-                            fetchCustomerBookings();
-                            return;
-                        }
-                    } catch(e) {}
-                }
+                alert("Your account was not found. Please sign up again.");
+                showAuthModal("signup");
+                return;
             }
-        } catch(e) {}
-        // Backend login failed — try restoring user in case DB was wiped
-        if (backendAvail) {
-            var storedUser = allUsers.find(function(u) { return u.email === identifier || u.phone === identifier; });
-            if (storedUser) {
-                try {
-                    var retryResp = await fetch(apiUrl + "/auth/login", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            identifier: identifier, password: password, restoring: true,
-                            firstname: storedUser.firstname, lastname: storedUser.lastname,
-                            phone: storedUser.phone, bitmoji: storedUser.bitmoji || "\uD83D\uDE0A"
-                        })
-                    });
-                    var retryData = await retryResp.json();
-                    if (retryData.success) {
-                        currentUser = retryData.user; currentUser._plainPass = password; window.__HAVENGO_JWT__ = retryData.token;
-                        closeAuthModal(); updateProfileWithUser(); renderProfilePage();
-                        updateProfilePicCursor();
-                        addNotification("\uD83D\uDD13", "Account Restored", "Your account was restored from local backup after a server data reset. All your information has been recovered.");
-                        fetchBackendNotifications(); fetchCustomerBookings();
-                        return;
-                    }
-                } catch(e) {}
-            }
-        }
     }
     if (backendAvail) {
         alert("Unable to log in. Your account data was lost due to a server reset. Please sign up again.");
@@ -2772,6 +2714,8 @@ async function loginAsProvider() {
             if (data.success) {
                 var p = data.provider;
                 window.__HAVENGO_JWT__ = data.token;
+                providerTasks = [];
+                completedTasks = [];
                 currentLoggedProvider = {
                     id: p.id,
                     name: p.firstname + " " + p.lastname,
@@ -2798,96 +2742,16 @@ async function loginAsProvider() {
                 return;
             }
             if (data.user_not_found) {
-                // Backend provider was wiped — restore from local storage
-                var storedProv = registeredProviders.find(function(p) { return p.email === idVal || p.phone === idVal; });
-                if (storedProv) {
-                    try {
-                        var retryResp = await fetch(apiUrl + "/provider/login", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                identifier: idVal, password: passVal,
-                                restoring: true,
-                                firstname: storedProv.firstname || storedProv.name || "",
-                                lastname: storedProv.lastname || "",
-                                email: storedProv.email,
-                                phone: storedProv.phone,
-                                businessName: storedProv.business_name || storedProv.name || "",
-                                services: storedProv.services || storedProv.service || "General Services",
-                                bitmoji: storedProv.bitmoji || "\uD83D\uDD27",
-                                location: storedProv.location || "",
-                                bio: storedProv.bio || ""
-                            })
-                        });
-                        var retryData = await retryResp.json();
-                            if (retryData.success) {
-                                var p = retryData.provider;
-                                window.__HAVENGO_JWT__ = retryData.token;
-                                currentLoggedProvider = {
-                                    id: p.id, name: p.firstname + " " + p.lastname,
-                                    firstname: p.firstname, lastname: p.lastname,
-                                    service: (typeof p.services === "string" ? p.services : "General Services"),
-                                    services: parseProviderServices(p.services),
-                                    location: p.location || "", phone: p.phone, email: p.email,
-                                    password: "", bitmoji: p.bitmoji || "\uD83D\uDD27",
-                                    bio: p.bio || "", verified: true,
-                                    business_name: p.business_name || "",
-                                    registration_fee_paid: p.registration_fee_paid || 0
-                                };
-                                addNotification("\uD83D\uDD13", "Account Restored", "Your provider account was restored from local backup after a server data reset.");
-                                globalNotifications = [];
-                                enterProviderDashboard(currentLoggedProvider);
-                            return;
-                        }
-                    } catch(e) {}
-                }
+                alert("Your account was not found. Please sign up again.");
+                return;
             }
         } catch(e) {}
-        // Backend failed — try restoring provider in case DB was wiped
-        if (backendOk) {
-            var storedProv = registeredProviders.find(function(p) { return p.email === idVal || p.phone === idVal; });
-            if (storedProv) {
-                try {
-                    var retryResp = await fetch(apiUrl + "/provider/login", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            identifier: idVal, password: passVal, restoring: true,
-                            firstname: storedProv.firstname || storedProv.name || "",
-                            lastname: storedProv.lastname || "", email: storedProv.email,
-                            phone: storedProv.phone, businessName: storedProv.business_name || storedProv.name || "",
-                            services: storedProv.services || storedProv.service || "General Services",
-                            bitmoji: storedProv.bitmoji || "\uD83D\uDD27",
-                            location: storedProv.location || "", bio: storedProv.bio || ""
-                        })
-                    });
-                    var retryData = await retryResp.json();
-                    if (retryData.success) {
-                        var p = retryData.provider;
-                        window.__HAVENGO_JWT__ = retryData.token;
-                        currentLoggedProvider = {
-                            id: p.id, name: p.firstname + " " + p.lastname,
-                            firstname: p.firstname, lastname: p.lastname,
-                            service: (typeof p.services === "string" ? p.services : "General Services"),
-                            services: parseProviderServices(p.services),
-                            location: p.location || "", phone: p.phone, email: p.email,
-                            password: "", bitmoji: p.bitmoji || "\uD83D\uDD27",
-                            bio: p.bio || "", verified: true,
-                            business_name: p.business_name || "",
-                            registration_fee_paid: p.registration_fee_paid || 0
-                        };
-                        addNotification("\uD83D\uDD13", "Account Restored", "Your provider account was restored from local backup after a server data reset.");
-                        globalNotifications = [];
-                        enterProviderDashboard(currentLoggedProvider);
-                        return;
-                    }
-                } catch(e) {}
-            }
-        }
-        alert(backendOk ? "Unable to log in. Your provider account data was lost due to a server reset. Please contact support." : "Server is currently unavailable. Please try again later.");
-        return;
     }
-    alert(backendOk ? "Unable to log in. Your provider account data was lost due to a server reset. Please contact support." : "Server is currently unavailable. Please try again later.");
+    if (backendOk) {
+        alert("Unable to log in. Your provider account was not found. Please sign up again.");
+    } else {
+        alert("Server is currently unavailable. Please try again later.");
+    }
 }
 
 async function enterProviderDashboard(provider) {
@@ -4839,7 +4703,7 @@ function renderAllProviderLists() {
         for (var i = 0; i < providers.length; i++) {
             var p = providers[i];
             var avgRating = getAvgRating(p.name);
-            var displayRating = avgRating !== null ? avgRating : (p.rating || 4.5);
+            var displayRating = avgRating !== null ? avgRating : 0;
             var stars = "";
             var r = Math.floor(displayRating);
             for (var s = 0; s < r; s++) stars += "\u2605";
