@@ -1298,6 +1298,7 @@ async function performLogin() {
                 showAuthModal("signup");
                 return;
             }
+        } catch(e) {}
     }
     if (backendAvail) {
         alert("Unable to log in. Your account data was lost due to a server reset. Please sign up again.");
