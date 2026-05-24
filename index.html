@@ -1,16 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>HavenGo Uganda | Premium Home Services</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
 <style>
 .hero-gradient{ background:linear-gradient(135deg,#0f172a 0%,#1e40af 100%); }
-.gray-gradient{ background:linear-gradient(135deg,#4b5563 0%,#6b7280 50%,#9ca3af 100%); }
 .page{display:none;}
 .page.active{ display:block; animation:fade .35s ease; }
 @keyframes fade{ from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
@@ -237,60 +234,11 @@
                 <div class="grid grid-cols-2 gap-4"><div><label class="font-medium block mb-2">First Name</label><input id="signup-firstname" type="text" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div><div><label class="font-medium block mb-2">Last Name</label><input id="signup-lastname" type="text" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div></div>
                 <div><label class="font-medium block mb-2">Phone Number</label><input id="signup-phone" type="tel" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" placeholder="0777 062 518"></div>
                 <div><label class="font-medium block mb-2">Email</label><input id="signup-email" type="email" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
-                <div class="border-t pt-4 mt-4">
-                    <p class="font-medium text-sm text-gray-700 mb-3">Verify your contact <span class="text-xs text-gray-400">(Check your phone/email for code)</span></p>
-                    <div class="flex gap-2 mb-2">
-                        <select id="verify-type" class="border rounded-2xl px-4 py-4 outline-none focus:border-emerald-600">
-                            <option value="phone">Phone</option>
-                            <option value="email">Email</option>
-                        </select>
-                        <button type="button" onclick="sendVerificationCode()" id="send-code-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-4 rounded-2xl text-sm font-medium whitespace-nowrap">Send Code</button>
-                    </div>
-                    <div class="flex gap-2">
-                        <input id="verification-code" type="text" maxlength="6" class="flex-1 border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600 text-center text-2xl tracking-widest" placeholder="_ _ _ _ _ _">
-                        <button type="button" onclick="verifyCode()" id="verify-code-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-4 rounded-2xl text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>Verify</button>
-                    </div>
-                    <div id="verify-status" class="text-sm mt-2"></div>
-                    <div id="code-display" class="hidden mt-3 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
-                        <p class="text-xs text-emerald-700 mb-1">Your verification code</p>
-                        <p id="code-display-value" class="text-4xl font-bold text-emerald-700 tracking-[8px]"></p>
-                    </div>
-                </div>
                 <div><label class="font-medium block mb-2">Create Password</label><input id="signup-password" type="password" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
                 <div><label class="font-medium block mb-2">Confirm Password</label><input id="signup-confirm-password" type="password" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
                 <button onclick="(async()=>{await performSignup()})()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-3xl font-semibold">Create Account</button>
             </div>
             <div class="text-center mt-6"><p class="text-sm text-gray-500">Already have an account? <span onclick="switchAuthMode('login')" class="text-emerald-600 cursor-pointer font-medium">Login</span></p></div>
-        </div>
-    </div>
-</div>
-</div>
-
-<div id="provider-consent-modal" class="hidden fixed inset-0 z-[75] flex items-center justify-center bg-black/70 modal p-5">
-<div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto">
-    <div class="gray-gradient text-white p-6"><h2 class="text-2xl font-bold">Join HavenGo - Consent & Agreement</h2></div>
-    <div class="p-8 space-y-5">
-        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-            <h3 class="font-semibold text-amber-800"><i class="fa-solid fa-percent"></i> Service Fee</h3>
-            <p class="text-sm text-amber-700">A 15% service fee will be deducted from all earnings for each completed order. This covers platform maintenance, customer acquisition, and support.</p>
-        </div>
-        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4">
-            <h3 class="font-semibold text-blue-800"><i class="fa-solid fa-gem"></i> Registration Fee</h3>
-            <p class="text-sm text-blue-700">A one-time registration fee of 50,000 UGX is required to activate your account and start receiving orders.</p>
-        </div>
-        <div class="bg-green-50 border border-green-200 rounded-2xl p-4">
-            <h3 class="font-semibold text-green-800"><i class="fa-solid fa-handshake"></i> Diligent Service</h3>
-            <p class="text-sm text-green-700">I agree to provide services diligently, professionally, and to the best of my ability. I understand that poor service may result in account suspension.</p>
-        </div>
-        <div>
-            <label class="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" id="consent-agree" class="mt-1">
-                <span class="text-sm text-gray-600">I have read and agree to the <a onclick="navigateTo('terms')" class="text-emerald-600 underline cursor-pointer">Terms & Conditions</a> and consent to the 15% service fee and 50,000 UGX registration fee.</span>
-            </label>
-        </div>
-        <div class="flex gap-3">
-            <button onclick="providerConsentAccepted()" id="consent-accept-btn" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-3xl font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>Accept & Continue</button>
-            <button onclick="document.getElementById('provider-consent-modal').classList.add('hidden')" class="flex-1 border py-4 rounded-3xl font-semibold">Cancel</button>
         </div>
     </div>
 </div>
@@ -375,18 +323,17 @@
 <div class="max-w-7xl mx-auto px-5 py-10">
 <div class="flex items-center justify-between mb-10"><h2 class="text-4xl font-bold">All Services</h2><select class="border rounded-xl px-4 py-3"><option>Sort By</option><option>Most Popular</option><option>Lowest Price</option><option>Highest Rated</option></select></div>
 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Deep Home Cleaning & Maintenance</h3><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs">Premium</span></div><p class="text-gray-600 mb-4">Professional deep cleaning, pest control, sofa & carpet shampooing, appliance repair, and on-call handymen.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">85k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('cleaning-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-cleaning-providers"></i></button><div id="cleaning-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Mobile Spa & Wellness</h3><span class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs">Luxury</span></div><p class="text-gray-600 mb-4">Full mobile spa: nails, massages, makeup artistry, hair styling — all at your home.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">95k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('spa-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-spa-providers"></i></button><div id="spa-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1584515933487-779824d29309?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Family & Pet Care</h3><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">Trusted</span></div><p class="text-gray-600 mb-4">Vetted babysitters, elderly care companions, dog walkers, and professional pet groomers.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">70k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('family-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-family-providers"></i></button><div id="family-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Errands & Logistics</h3><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs">Convenient</span></div><p class="text-gray-600 mb-4">Laundry pick-up/drop-off, grocery runners, local packing & moving, catering services, and reliable househelp.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">45k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('errands-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-errands-providers"></i></button><div id="errands-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Catering & Ushering</h3><span class="bg-violet-100 text-violet-700 px-3 py-1 rounded-full text-xs">Events</span></div><p class="text-gray-600 mb-4">Professional catering for events, parties, corporate functions and experienced ushers & event support staff.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">150k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('catering-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-catering-providers"></i></button><div id="catering-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Kids Activities & Tutoring</h3><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs">Fun & Learn</span></div><p class="text-gray-600 mb-4">Professional home tutors, art & craft sessions, storytelling, music lessons and kids yoga & fitness activities.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">60k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('kids-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-kids-providers"></i></button><div id="kids-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">AC & Appliance Repair</h3><span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs">Technical</span></div><p class="text-gray-600 mb-4">Expert repair for air conditioners, refrigerators, washing machines, ovens and other home appliances.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">55k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('appliance-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-appliance-providers"></i></button><div id="appliance-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Gardening & Landscaping</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">Green Thumb</span></div><p class="text-gray-600 mb-4">Lawn care, plant maintenance, landscaping design, hedge trimming and garden setup services.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">65k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('gardening-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-gardening-providers"></i></button><div id="gardening-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Mobile Hair Styling</h3><span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs">Beauty</span></div><p class="text-gray-600 mb-4">Professional hairstylists traveling directly to your home with tools for knotless braids, weaves, and more.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">75k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('hair-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-hair-providers"></i></button><div id="hair-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Home Care Nurses</h3><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">Healthcare</span></div><p class="text-gray-600 mb-4">Professional registered nurses for home visits, elderly care, post-surgery recovery, medication management, and health monitoring at your doorstep.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">80k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('nursing-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-nursing-providers"></i></button><div id="nursing-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Event Infrastructure Hire</h3><span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs">Events</span></div><p class="text-gray-600 mb-4">Tents, plastic & executive chairs, sound systems, PA setups for your events.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">250k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('event-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-event-providers"></i></button><div id="event-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
-<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Mobile Auto Care & Detailing</h3><span class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs">Vehicle</span></div><p class="text-gray-600 mb-4">Professional car washing and detailing at your home or office.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">65k</p></div><div class="text-right"><p class="text-yellow-500">&#9734;&#9734;&#9734;&#9734;&#9734;</p><p class="text-sm text-gray-500">0.0 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('auto-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-auto-providers"></i></button><div id="auto-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Deep Home Cleaning & Maintenance</h3><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs">Premium</span></div><p class="text-gray-600 mb-4">Professional deep cleaning, pest control, sofa & carpet shampooing, appliance repair, and on-call handymen.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">85k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.9 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('cleaning-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-cleaning-providers"></i></button><div id="cleaning-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Mobile Spa & Wellness</h3><span class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs">Luxury</span></div><p class="text-gray-600 mb-4">Full mobile spa: nails, massages, makeup artistry, hair styling ï¿½ all at your home.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">95k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.8 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('spa-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-spa-providers"></i></button><div id="spa-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1584515933487-779824d29309?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Family & Pet Care</h3><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">Trusted</span></div><p class="text-gray-600 mb-4">Vetted babysitters, elderly care companions, dog walkers, and professional pet groomers.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">70k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.7 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('family-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-family-providers"></i></button><div id="family-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Errands & Logistics</h3><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs">Convenient</span></div><p class="text-gray-600 mb-4">Laundry pick-up/drop-off, grocery runners, local packing & moving, catering services, and reliable househelp.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">45k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.6 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('errands-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-errands-providers"></i></button><div id="errands-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Catering & Ushering</h3><span class="bg-violet-100 text-violet-700 px-3 py-1 rounded-full text-xs">Events</span></div><p class="text-gray-600 mb-4">Professional catering for events, parties, corporate functions and experienced ushers & event support staff.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">150k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.8 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('catering-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-catering-providers"></i></button><div id="catering-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Kids Activities & Tutoring</h3><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs">Fun & Learn</span></div><p class="text-gray-600 mb-4">Professional home tutors, art & craft sessions, storytelling, music lessons and kids yoga & fitness activities.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">60k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.8 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('kids-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-kids-providers"></i></button><div id="kids-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">AC & Appliance Repair</h3><span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs">Technical</span></div><p class="text-gray-600 mb-4">Expert repair for air conditioners, refrigerators, washing machines, ovens and other home appliances.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">55k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.9 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('appliance-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-appliance-providers"></i></button><div id="appliance-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Gardening & Landscaping</h3><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">Green Thumb</span></div><p class="text-gray-600 mb-4">Lawn care, plant maintenance, landscaping design, hedge trimming and garden setup services.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">65k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.7 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('gardening-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-gardening-providers"></i></button><div id="gardening-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Mobile Hair Styling</h3><span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs">Beauty</span></div><p class="text-gray-600 mb-4">Professional hairstylists traveling directly to your home with tools for knotless braids, weaves, and more.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">75k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.9 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('hair-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-hair-providers"></i></button><div id="hair-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Event Infrastructure Hire</h3><span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs">Events</span></div><p class="text-gray-600 mb-4">Tents, plastic & executive chairs, sound systems, PA setups for your events.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">250k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.8 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('event-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-event-providers"></i></button><div id="event-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
+<div class="provider-card bg-white rounded-3xl overflow-hidden shadow"><img src="https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=1200" class="h-60 w-full object-cover"><div class="p-6"><div class="flex justify-between items-start mb-3"><h3 class="font-bold text-xl">Mobile Auto Care & Detailing</h3><span class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs">Vehicle</span></div><p class="text-gray-600 mb-4">Professional car washing and detailing at your home or office.</p><div class="flex items-center justify-between mb-5"><div><p class="text-sm text-gray-500">Starting from</p><p class="text-3xl font-bold text-emerald-600">65k</p></div><div class="text-right"><p class="text-yellow-500">★★★★★</p><p class="text-sm text-gray-500">4.7 Rating</p></div></div><div class="mt-6 border-t pt-6"><button onclick="toggleProviders('auto-providers')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl font-medium text-sm transition-all"><i class="fa-solid fa-eye"></i> Tap to See Providers <i class="fa-solid fa-chevron-down text-xs ml-1 provider-chevron" id="chevron-auto-providers"></i></button><div id="auto-providers" class="space-y-4 mt-4 hidden"></div></div></div></div>
 </div></div></div>
 
 <div id="provider-tasks" class="page">
@@ -394,7 +341,7 @@
     <div class="flex items-center justify-between mb-8">
         <div><h2 class="text-4xl font-bold">HavenGo Tasks</h2><p class="text-gray-500">Service Provider Portal</p></div>
         <div id="provider-header" class="hidden items-center gap-3">
-            <div class="text-right"><p class="font-medium" id="logged-provider-name">Aisha Nabbanja</p><p class="text-xs text-emerald-600" id="logged-provider-service">Deep Cleaning • Kampala</p></div>
+            <div class="text-right"><p class="font-medium" id="logged-provider-name">Aisha Nabbanja</p><p class="text-xs text-emerald-600" id="logged-provider-service">Deep Cleaning ï¿½ Kampala</p></div>
             <button onclick="openProviderAdminChat()" class="text-sm bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-2xl mr-2"><i class="fa-solid fa-comment"></i> Admin</button>
             <button onclick="requestProviderAccountDeletion()" class="text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-2xl mr-2"><i class="fa-solid fa-trash-can"></i> Delete</button>
             <button onclick="logoutProvider()" class="text-sm bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-2xl">Logout</button>
@@ -405,7 +352,7 @@
     </div>
     <div id="provider-login-screen">
         <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl p-8">
-            <div class="text-center mb-8"><div class="w-20 h-20 mx-auto bg-emerald-100 rounded-2xl flex items-center justify-center text-4xl mb-4"><i class="fa-solid fa-toolbox text-emerald-600"></i></div><h3 class="text-2xl font-bold">Provider Login</h3><p class="text-gray-500">Access your tasks and earnings</p></div>
+            <div class="text-center mb-8"><div class="w-20 h-20 mx-auto bg-emerald-100 rounded-2xl flex items-center justify-center text-4xl mb-4">🔧</div><h3 class="text-2xl font-bold">Provider Login</h3><p class="text-gray-500">Access your tasks and earnings</p></div>
             <div class="space-y-5">
                 <div><label class="font-medium block mb-2">Phone Number or Email</label><input id="prov-login-id" type="text" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" placeholder="0777 062 518"></div>
                 <div><label class="font-medium block mb-2">Password</label><input id="prov-login-pass" type="password" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
@@ -454,13 +401,13 @@
 <div id="join-provider" class="page">
 <div class="max-w-4xl mx-auto px-5 py-10">
 <div class="bg-white rounded-3xl shadow overflow-hidden">
-<div class="gray-gradient h-44 flex items-end px-8 pb-8"><h2 class="text-4xl font-bold text-white">Join HavenGo as a Service Provider</h2></div>
+<div class="hero-gradient h-44 flex items-end px-8 pb-8"><h2 class="text-4xl font-bold text-white">Join HavenGo as a Service Provider</h2></div>
 <div class="p-8">
 <form id="provider-form" onsubmit="submitProviderApplication(event)" class="space-y-8">
     <div class="grid md:grid-cols-2 gap-6"><div><label class="font-medium block mb-2">Full Name <span class="text-red-500">*</span></label><input type="text" id="prov-name" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div><div><label class="font-medium block mb-2">Phone Number <span class="text-red-500">*</span></label><input type="tel" id="prov-phone" required pattern="0[0-9]{9}" title="Enter a valid 10-digit phone number starting with 0" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div></div>
     <div><label class="font-medium block mb-2">Email Address</label><input type="email" id="prov-email" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
     <div><label class="font-medium block mb-2">Business Name <span class="text-red-500">*</span></label><input type="text" id="prov-business" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
-    <div><label class="font-medium block mb-2">Business Bitmoji <span class="text-red-500">*</span></label><div onclick="toggleProviderBitmojiPicker()" id="bitmoji-select" class="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-4xl cursor-pointer hover:border-emerald-600 hover:bg-emerald-50 transition-all">🔧</div><div id="provider-bitmoji-picker" class="hidden mt-3 bg-white rounded-3xl shadow-2xl p-4 border z-10" style="width:320px;position:relative;"><div class="flex justify-between items-center mb-2"><span class="text-sm font-medium">Choose Bitmoji</span><button type="button" onclick="event.stopPropagation();document.getElementById('provider-bitmoji-picker').classList.add('hidden')" class="text-gray-400 text-xl">&times;</button></div><div class="grid grid-cols-6 gap-2 text-2xl" id="provider-bitmoji-grid"></div></div></div>
+    <div><label class="font-medium block mb-2">Business Bitmoji <span class="text-red-500">*</span></label><div onclick="toggleProviderBitmojiPicker()" id="bitmoji-select" class="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-4xl cursor-pointer hover:border-emerald-600 hover:bg-emerald-50 transition-all">👤</div><div id="provider-bitmoji-picker" class="hidden mt-3 bg-white rounded-3xl shadow-2xl p-4 border z-10" style="width:320px;position:relative;"><div class="flex justify-between items-center mb-2"><span class="text-sm font-medium">Choose Bitmoji</span><button type="button" onclick="event.stopPropagation();document.getElementById('provider-bitmoji-picker').classList.add('hidden')" class="text-gray-400 text-xl">&times;</button></div><div class="grid grid-cols-6 gap-2 text-2xl" id="provider-bitmoji-grid"></div></div></div>
     <div><label class="font-medium block mb-2">Service Categories <span class="text-red-500">*</span></label><select multiple id="multi-service-select" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600 h-40"></select></div>
     <div class="grid md:grid-cols-3 gap-6"><div><label class="font-medium block mb-2">Years of Experience <span class="text-red-500">*</span></label><input type="number" id="prov-exp" min="0" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div><div><label class="font-medium block mb-2">Create Password <span class="text-red-500">*</span></label><input type="password" id="prov-password" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" placeholder="Minimum 6 characters"></div><div><label class="font-medium block mb-2">Confirm Password <span class="text-red-500">*</span></label><input type="password" id="prov-confirm-password" required class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" placeholder="Repeat password"></div></div>
     <div><label class="font-medium block mb-2">Upload National ID / Passport Photo</label><input type="file" id="prov-id" accept="image/*" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
@@ -475,7 +422,7 @@
 <div id="profile" class="page">
 <div class="max-w-4xl mx-auto px-5 py-10">
 <div class="bg-white rounded-3xl shadow overflow-hidden">
-<div class="gray-gradient h-44"></div>
+<div class="hero-gradient h-44"></div>
 <div class="px-8 pb-10 relative">
 <div id="profile-avatar-container" class="absolute -top-16">
     <img id="profile-pic" src="https://images.unsplash.com/photo-1531123897720-8f129e1688f7?w=400" class="w-32 h-32 rounded-full border-4 border-white object-cover" onclick="triggerProfilePicUpload()">
@@ -502,11 +449,10 @@
 <div id="profile-tab-0" class="profile-tab-content mt-8">
 <div class="grid md:grid-cols-3 gap-6">
 <div class="bg-gray-100 rounded-2xl p-6"><p class="text-gray-500 mb-2">Orders</p><h3 class="text-3xl font-bold" id="profile-order-count">0</h3></div>
-<div class="bg-gray-100 rounded-2xl p-6"><p class="text-gray-500 mb-2">Favorite Providers</p><h3 class="text-3xl font-bold" id="profile-saved-providers-count">0</h3></div>
+<div class="bg-gray-100 rounded-2xl p-6"><p class="text-gray-500 mb-2">Saved Providers</p><h3 class="text-3xl font-bold" id="profile-saved-providers-count">0</h3></div>
 <div class="bg-gray-100 rounded-2xl p-6"><p class="text-gray-500 mb-2">Account Balance</p><h3 class="text-3xl font-bold text-emerald-600" id="profile-balance-display">2,000,000 UGX</h3></div>
 </div>
 <div class="mt-10 border-t pt-8"><h3 class="font-semibold mb-4">Recent Activity</h3><div id="recent-activity-list" class="space-y-4 text-sm"></div></div>
-<div class="mt-10 border-t pt-8"><h3 class="font-semibold mb-4">Favorite Providers</h3><div id="favorite-providers-list" class="space-y-3 text-sm"></div></div>
 <div id="delete-account-container" class="mt-8 border-t pt-8" style="display:none;">
     <button onclick="requestAccountDeletion()" class="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-semibold"><i class="fa-solid fa-trash-can"></i> Delete Account</button>
 </div>
@@ -519,7 +465,6 @@
             <button onclick="showPaymentsPending()" class="flex-1 border border-emerald-600 text-emerald-700 py-4 rounded-2xl font-semibold relative"><i class="fa-solid fa-credit-card"></i> Pay<span id="pending-payment-count" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span></button>
             <button onclick="showCustomerWithdrawModal()" class="flex-1 bg-amber-600 text-white py-4 rounded-2xl font-semibold"><i class="fa-solid fa-wallet"></i> Withdraw</button>
         </div>
-        <div id="withdraw-notice" class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-2xl text-sm text-blue-700"><i class="fa-solid fa-info-circle"></i> Deposited funds can be withdrawn at any time unless you have a pending or active order.</div>
         <div id="payment-countdown" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
             <p class="font-medium text-red-700"><i class="fa-solid fa-clock"></i> Payment Required Before Withdraw</p>
             <p class="text-sm text-red-600 mt-1">Complete pending payment before withdrawing. Auto-deduction in: <span id="countdown-timer" class="font-bold">--:--:--</span></p>
@@ -658,7 +603,6 @@
     <p class="text-gray-500 mb-6">Provider has marked a task as completed. Confirm payment?</p>
     <div id="pending-payment-details" class="bg-gray-50 p-4 rounded-2xl mb-6"></div>
     <button onclick="confirmPayment()" class="w-full bg-emerald-600 text-white py-4 rounded-3xl font-semibold mb-3"><i class="fa-solid fa-check"></i> Confirm Payment</button>
-    <button onclick="reportPaymentIssue()" class="w-full bg-red-50 text-red-600 border border-red-200 py-4 rounded-3xl font-semibold mb-3"><i class="fa-solid fa-flag"></i> Report Issue</button>
     <button onclick="closeModal('payment-confirm-modal'); trackPaymentDecline();" class="w-full border py-4 rounded-3xl font-semibold">Pay Later</button>
 </div></div>
 
@@ -669,13 +613,10 @@
 <div><label class="font-medium">Selected Service</label><div id="modal-service" class="mt-2 bg-gray-100 rounded-2xl p-4"></div></div>
 <div><label class="font-medium">Estimated Price</label><div id="modal-price" class="mt-2 bg-gray-100 rounded-2xl p-4 font-bold text-emerald-600"></div></div>
 <div id="dynamic-fields" class="space-y-6"></div>
-<div class="pt-4 border-t"><button onclick="alert('Chat will be available after placing your order.')" type="button" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-emerald-600 text-emerald-700 py-4 rounded-2xl font-semibold hover:bg-emerald-50"><i class="fa-solid fa-comments"></i><span>💬 Chat with Provider</span></button></div>
+<div class="pt-4 border-t"><button onclick="alert('Chat will be available after placing your order.')" type="button" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-emerald-600 text-emerald-700 py-4 rounded-2xl font-semibold hover:bg-emerald-50"><i class="fa-solid fa-comments"></i><span>?? Chat with Provider</span></button></div>
 <div class="grid md:grid-cols-2 gap-5"><div><label class="font-medium">Select Date</label><input type="date" id="booking-date" required class="w-full mt-2 border rounded-2xl px-4 py-4 outline-none"></div><div><label class="font-medium">Select Time</label><input type="time" id="booking-time" required class="w-full mt-2 border rounded-2xl px-4 py-4 outline-none"></div></div>
-<div><label class="font-medium block mb-2">Delivery Address</label>
-<div class="flex gap-2">
-    <input id="address-input" type="text" class="flex-1 border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" placeholder="e.g. Kololo, Kampala">
-    <button type="button" onclick="openMapPicker()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-4 py-4 rounded-2xl text-sm" title="Pin on Map"><i class="fa-solid fa-map-location-dot"></i></button>
-</div></div>
+<div><label class="font-medium">Address</label><input type="text" id="address-input" placeholder="Enter your location" required class="w-full mt-2 border rounded-2xl px-4 py-4 outline-none"></div>
+<div class="mt-4"><label class="font-medium block mb-2">Pin Your Exact Location on Map</label><div class="map-container"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.757249016!2d32.5825!3d0.3136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177d9f2c3c3c3c3d%3A0x1b2c3d4e5f6g7h8i!2sKampala%2C%20Uganda!5e0!3m2!1sen!2sug!4v1710000000000" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>
 <div><label class="font-medium">Special Instructions</label><textarea id="special-instructions" rows="4" placeholder="Anything provider should know..." class="w-full mt-2 border rounded-2xl px-4 py-4 outline-none"></textarea></div>
 <div class="flex gap-4 pt-3"><button type="button" onclick="closeModal('checkout-modal')" class="flex-1 border py-4 rounded-2xl font-semibold">Cancel</button><button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-semibold">Order Now</button></div>
 </form></div></div>
@@ -721,59 +662,20 @@
     </div>
 </div></div>
 
-<div id="map-picker-modal" class="hidden fixed inset-0 z-[75] flex items-center justify-center bg-black/70 modal p-5">
-<div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
-    <div class="gray-gradient text-white p-6 flex justify-between items-center">
-        <h2 class="text-2xl font-bold">Pin Your Location</h2>
-        <button onclick="closeModal('map-picker-modal')" class="text-3xl leading-none">&times;</button>
-    </div>
-    <div class="p-6">
-        <div class="mb-4">
-            <input type="text" id="map-search-input" placeholder="Search your area..." class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600" onkeyup="searchMapLocation(event)">
-        </div>
-        <div id="map-picker" style="height: 400px;" class="rounded-2xl border"></div>
-        <div id="map-location-info" class="mt-3 text-sm text-gray-600"></div>
-        <button onclick="confirmMapLocation()" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-3xl font-semibold">Confirm Location</button>
-    </div>
-</div>
-</div>
-
-<div id="tracking-modal" class="hidden fixed inset-0 z-[75] flex items-center justify-center bg-black/70 modal p-5">
-<div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
-    <div class="gray-gradient text-white p-6 flex justify-between items-center">
-        <div><h2 class="text-2xl font-bold">Live Tracking</h2><p id="tracking-service-name" class="text-gray-200 text-sm"></p></div>
-        <button onclick="closeTrackingModal()" class="text-3xl leading-none">&times;</button>
-    </div>
-    <div class="p-6">
-        <div class="grid grid-cols-3 gap-4 mb-4">
-            <div class="bg-gray-50 rounded-2xl p-4 text-center">
-                <p class="text-xs text-gray-500">Provider</p>
-                <p id="tracking-provider-name" class="font-semibold text-sm"></p>
-            </div>
-            <div class="bg-gray-50 rounded-2xl p-4 text-center">
-                <p class="text-xs text-gray-500">ETA</p>
-                <p id="tracking-eta" class="font-semibold text-sm text-emerald-600">--</p>
-            </div>
-            <div class="bg-gray-50 rounded-2xl p-4 text-center">
-                <p class="text-xs text-gray-500">Status</p>
-                <p id="tracking-status" class="font-semibold text-sm text-emerald-600">Tracking</p>
-            </div>
-        </div>
-        <div id="tracking-map" style="height: 350px;" class="rounded-2xl border"></div>
-        <div class="mt-4 text-sm text-gray-500"><i class="fa-solid fa-circle text-blue-500"></i> Your Location &nbsp; <i class="fa-solid fa-truck text-emerald-500"></i> Provider</div>
-    </div>
-</div>
-</div>
+<div id="tracking-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 modal p-5">
+<div class="bg-white w-full max-w-4xl rounded-3xl overflow-hidden">
+<div class="hero-gradient text-white p-6 flex justify-between items-center"><div><h2 class="text-3xl font-bold">Live Provider Tracking</h2><p class="text-gray-200" id="tracking-eta">Provider is on the way</p></div><button onclick="closeModal('tracking-modal')" class="text-2xl"><i class="fa-solid fa-xmark"></i></button></div>
+<div class="p-5"><div class="grid md:grid-cols-3 gap-5 mb-5"><div class="bg-gray-100 rounded-2xl p-5"><p class="text-gray-500">Provider</p><h3 class="font-bold text-xl" id="tracking-provider-name">Provider Name</h3><p class="text-xs text-gray-400" id="tracking-provider-contact"></p></div><div class="bg-gray-100 rounded-2xl p-5"><p class="text-gray-500">Service</p><h3 class="font-bold text-xl" id="tracking-service-name">Service Name</h3></div><div class="bg-gray-100 rounded-2xl p-5"><p class="text-gray-500">Est. Arrival</p><h3 class="font-bold text-xl" id="tracking-eta-value">--</h3></div></div><div class="rounded-3xl overflow-hidden"><iframe src="https://maps.google.com/maps?q=kampala&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe></div></div></div></div>
 
 <div id="provider-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 modal p-5">
 <div class="bg-white w-full max-w-3xl rounded-3xl overflow-hidden">
 <div class="hero-gradient p-8 text-white flex justify-between"><div><h2 id="provider-name" class="text-3xl font-bold"></h2><p class="text-gray-200">Verified HavenGo Partner</p></div><button onclick="closeModal('provider-modal')" class="text-2xl"><i class="fa-solid fa-xmark"></i></button></div>
-<div class="p-8"><div class="flex flex-col md:flex-row gap-8"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400" class="w-40 h-40 rounded-3xl object-cover"><div class="flex-1"><div class="flex items-center gap-2 mb-4"><p class="text-yellow-500 text-xl">&#9734;&#9734;&#9734;&#9734;&#9734;</p><span class="text-gray-500">(0.0)</span></div><p class="text-gray-600 mb-5">Experienced provider with over 6 years of professional home service experience.</p><button onclick="closeModal('provider-modal')" class="mt-6 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-2xl font-semibold">Book This Provider</button></div></div></div></div></div>
+<div class="p-8"><div class="flex flex-col md:flex-row gap-8"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400" class="w-40 h-40 rounded-3xl object-cover"><div class="flex-1"><div class="flex items-center gap-2 mb-4"><p class="text-yellow-500 text-xl">★★★★★</p><span class="text-gray-500">(4.9)</span></div><p class="text-gray-600 mb-5">Experienced provider with over 6 years of professional home service experience.</p><button onclick="closeModal('provider-modal')" class="mt-6 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-2xl font-semibold">Book This Provider</button></div></div></div></div></div>
 
 <div id="application-fee-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 modal p-5">
 <div class="bg-white max-w-md w-full rounded-3xl p-8">
     <h3 class="text-2xl font-bold mb-6 text-center">Application Fee</h3>
-    <div class="text-center mb-8"><div class="text-6xl mb-4">🛡️</div><p class="text-4xl font-bold text-emerald-600">50,000 UGX</p><p class="text-gray-500">One-time virtual verification fee</p></div>
+    <div class="text-center mb-8"><div class="text-6xl mb-4">💳</div><p class="text-4xl font-bold text-emerald-600">50,000 UGX</p><p class="text-gray-500">One-time virtual verification fee</p></div>
     <button onclick="completeApplicationPayment()" class="w-full bg-emerald-600 text-white py-4 rounded-3xl font-semibold mb-3">Pay with MTN MoMo / Airtel</button>
     <button onclick="closeModal('application-fee-modal')" class="w-full border py-4 rounded-3xl font-semibold">Cancel</button>
 </div></div>
@@ -823,24 +725,29 @@ async function checkBackend() {
 }
 
 function handleSessionExpired() {
-    if (!window.__HAVENGO_JWT__) return;
-    window.__HAVENGO_JWT__ = null;
-    currentUser = null;
-    currentLoggedProvider = null;
-    currentAdmin = null;
-    alert("Your session has expired. Please login again.");
-    navigateTo("home");
-    updateProfileWithUser();
-    renderProfilePage();
-    renderAllProviderLists();
-    updateNotifCount();
-    saveAppState();
+    if (window.__HAVENGO_JWT__) {
+        window.__HAVENGO_JWT__ = null;
+        currentUser = null;
+        currentLoggedProvider = null;
+        currentAdmin = null;
+        globalNotifications = [];
+        chatConversations = {};
+        localStorage.removeItem("havengoState");
+        localStorage.removeItem("havengoState_plain");
+        try { localStorage.removeItem("encKey"); } catch(e) {}
+        alert("Your session has expired. Please login again.");
+        navigateTo("home");
+        updateProfileWithUser();
+        renderProfilePage();
+        renderAllProviderLists();
+        updateNotifCount();
+    }
 }
 
 // --- STATE ---
 let currentUser = null;
 let allUsers = [];
-let userBalance = 2000000; // Default balance for real users
+let userBalance = 2000000;
 let userPaymentMethods = [];
 let savedAddresses = [];
 let pendingPayments = [];
@@ -851,16 +758,10 @@ let chatConversations = {};
 let currentChatTaskId = null;
 let profilePicSrc = "https://images.unsplash.com/photo-1531123897720-8f129e1688f7?w=400";
 
-// Demo payment system
-let isDemoMode = true; // Enable demo payments for testing
-let demoUserBalance = 500000; // Starting demo balance
-let demoPendingPayments = [];
-
 // Provider state
 let currentService = null;
 let currentSelectedProvider = null;
 let registeredProviders = [];
-let favoriteProviders = [];
 let currentLoggedProvider = null;
 let selectedBitmoji = null;
 let bookings = [];
@@ -935,10 +836,8 @@ function buildAppState() {
         userPaymentMethods: userPaymentMethods, savedAddresses: savedAddresses,
         pendingPayments: pendingPayments, globalNotifications: globalNotifications,
         userNotificationsMap: userNotificationsMap, userActivity: userActivity,
-        demoPendingPayments: demoPendingPayments, demoUserBalance: demoUserBalance,
         profilePicSrc: profilePicSrc, customerBitmoji: customerBitmoji,
         registeredProviders: registeredProviders,
-        favoriteProviders: favoriteProviders,
         bookings: bookings, providerTasks: providerTasks, completedTasks: completedTasks,
         earnings: earnings, providerEarningsMap: providerEarningsMap,
         priceChangeRequests: priceChangeRequests, deletionRequests: deletionRequests,
@@ -980,16 +879,12 @@ function applyState(state) {
     if (state.userBalance !== undefined) userBalance = state.userBalance;
     if (state.userPaymentMethods) userPaymentMethods = state.userPaymentMethods;
     if (state.savedAddresses) savedAddresses = state.savedAddresses;
-    if (state.pendingPayments) pendingPayments = state.pendingPayments;
     if (state.globalNotifications) globalNotifications = state.globalNotifications;
     if (state.userNotificationsMap) userNotificationsMap = state.userNotificationsMap;
     if (state.userActivity) userActivity = state.userActivity;
-    if (state.demoPendingPayments) demoPendingPayments = state.demoPendingPayments;
-    if (state.demoUserBalance !== undefined) demoUserBalance = state.demoUserBalance;
     if (state.profilePicSrc) profilePicSrc = state.profilePicSrc;
     if (state.customerBitmoji) customerBitmoji = state.customerBitmoji;
     if (state.registeredProviders) registeredProviders = state.registeredProviders;
-    if (state.favoriteProviders) favoriteProviders = state.favoriteProviders;
     if (state.bookings) bookings = state.bookings;
     if (state.providerTasks) providerTasks = state.providerTasks;
     if (state.completedTasks) completedTasks = state.completedTasks;
@@ -1023,13 +918,12 @@ const services = [
     { id: "gardening", name: "Gardening & Landscaping", basePrice: 65000, category: "gardening" },
     { id: "hair", name: "Mobile Hair Styling", basePrice: 75000, category: "hair" },
     { id: "event", name: "Event Infrastructure Hire", basePrice: 250000, category: "event" },
-    { id: "auto", name: "Mobile Auto Care & Detailing", basePrice: 65000, category: "auto" },
-    { id: "nursing", name: "Home Care Nurses", basePrice: 80000, category: "nursing" }
+    { id: "auto", name: "Mobile Auto Care & Detailing", basePrice: 65000, category: "auto" }
 ];
 
 const serviceEmojis = {
     cleaning: "\uD83E\uDDF9", spa: "\uD83D\uDC86", family: "\uD83D\uDC76", errands: "\uD83D\uDCE6", catering: "\uD83C\uDF7D\uFE0F",
-    kids: "\uD83C\uDFA8", appliance: "\uD83D\uDD27", gardening: "\uD83C\uDF3F", hair: "\uD83D\uDC87", event: "\uD83C\uDFAA",     auto: "\uD83D\uDE97", nursing: "\uD83C\uDFE5"
+    kids: "\uD83C\uDFA8", appliance: "\uD83D\uDD27", gardening: "\uD83C\uDF3F", hair: "\uD83D\uDC87", event: "\uD83C\uDFAA",     auto: "\uD83D\uDE97"
 };
 
 // Helper: parse backend services CSV string into array with id/name
@@ -1077,84 +971,32 @@ function switchAuthMode(mode) {
     document.getElementById("auth-modal-title").textContent = mode === "signup" ? "Create Your Account" : "Welcome to HavenGo";
 }
 
-// Admin login uses backend POST /api/auth/admin/login only
+var ADMIN_PASSWORD_HASH = "7c6ce978996d699cebdba62fe7fbf011f6cba949d7861579d5c81f64deca0c79";
 
 function sanitizeInput(str) {
     if (typeof str !== "string") return "";
     return str.replace(/[&<>"']/g, function(m) {
         if (m === "&") return "&amp;";
-        if (m === ">") return "&gt;";
         if (m === "<") return "&lt;";
+        if (m === ">") return "&gt;";
         if (m === '"') return "&quot;";
         if (m === "'") return "&#39;";
     });
 }
 
-var __verifiedContact = false;
-
-async function sendVerificationCode() {
-    var type = document.getElementById('verify-type').value;
-    var identifier = '';
-    if (type === 'phone') {
-        identifier = document.getElementById('signup-phone').value.trim();
-    } else {
-        identifier = document.getElementById('signup-email').value.trim();
+async function hashPassword(password) {
+    if (typeof crypto !== "undefined" && crypto.subtle) {
+        var encoder = new TextEncoder();
+        var data = encoder.encode(password);
+        var hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        var hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(function(b) { return b.toString(16).padStart(2, "0"); }).join("");
     }
-    if (!identifier) { alert('Please enter your ' + type + ' first'); return; }
-    document.getElementById('send-code-btn').disabled = true;
-    document.getElementById('send-code-btn').textContent = 'Sending...';
-    try {
-        var resp = await fetch(HAVENGO_BACKEND_URL + "/api/auth/send-verification-code", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ identifier: identifier, type: type })
-        });
-        var data = await resp.json();
-        if (data.success) {
-            document.getElementById('verify-code-btn').disabled = false;
-            document.getElementById('verify-status').textContent = '\u2705 Code sent to your ' + type;
-            document.getElementById('verify-status').className = 'text-sm mt-2 text-emerald-600';
-            document.getElementById('code-display-value').textContent = data.code;
-            document.getElementById('code-display').classList.remove('hidden');
-        } else {
-            document.getElementById('verify-status').textContent = '\u274c ' + (data.error || 'Failed to send code');
-            document.getElementById('verify-status').className = 'text-sm mt-2 text-red-600';
-        }
-    } catch(e) {
-        document.getElementById('verify-status').textContent = '\u274c Network error. Please try again.';
-        document.getElementById('verify-status').className = 'text-sm mt-2 text-red-600';
+    var h = 0, i = 0, chr = 0;
+    if (password.length > 0) {
+        for (i = 0; i < password.length; i++) { chr = password.charCodeAt(i); h = ((h << 5) - h) + chr; h |= 0; }
     }
-    document.getElementById('send-code-btn').disabled = false;
-    document.getElementById('send-code-btn').textContent = 'Send Code';
-}
-
-async function verifyCode() {
-    var code = document.getElementById('verification-code').value.trim();
-    if (!code || code.length < 6) { alert('Please enter the 6-digit code'); return; }
-    var type = document.getElementById('verify-type').value;
-    var identifier = type === 'phone' ? document.getElementById('signup-phone').value.trim() : document.getElementById('signup-email').value.trim();
-    try {
-        var resp = await fetch(HAVENGO_BACKEND_URL + "/api/auth/verify-code", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ identifier: identifier, code: code })
-        });
-        var data = await resp.json();
-        if (data.success) {
-            __verifiedContact = true;
-            document.getElementById('verify-status').textContent = '\u2705 Verified!';
-            document.getElementById('verify-status').className = 'text-sm mt-2 text-emerald-600 font-bold';
-            document.getElementById('verify-code-btn').disabled = true;
-            document.getElementById('verification-code').disabled = true;
-            document.getElementById('code-display').classList.add('hidden');
-        } else {
-            document.getElementById('verify-status').textContent = '\u274c ' + (data.error || 'Invalid code');
-            document.getElementById('verify-status').className = 'text-sm mt-2 text-red-600';
-        }
-    } catch(e) {
-        document.getElementById('verify-status').textContent = '\u274c Network error. Please try again.';
-        document.getElementById('verify-status').className = 'text-sm mt-2 text-red-600';
-    }
+    return "fallback_" + Math.abs(h).toString(16).padStart(8, "0");
 }
 
 async function performSignup() {
@@ -1183,11 +1025,6 @@ async function performSignup() {
         return;
     }
 
-    if (!__verifiedContact) {
-        alert('Please verify your phone number or email first by clicking "Send Code" above.');
-        return;
-    }
-
     // Try backend signup first
     var apiUrl = HAVENGO_BACKEND_URL + "/api";
     var backendOk = await checkBackend();
@@ -1197,13 +1034,11 @@ async function performSignup() {
             var regResp = await fetch(apiUrl + "/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ firstname: firstname, lastname: lastname, phone: phone, email: email, password: password, verified: true })
+                body: JSON.stringify({ firstname: firstname, lastname: lastname, phone: phone, email: email, password: password })
             });
             var regData = await regResp.json();
             if (regData.success) {
-                globalNotifications = [];
                 currentUser = regData.user;
-                currentUser._plainPass = password;
                 window.__HAVENGO_JWT__ = regData.token;
                 closeAuthModal();
                 updateProfileWithUser();
@@ -1212,6 +1047,7 @@ async function performSignup() {
                 addNotification("\uD83C\uDF89", "Account Created", "Welcome to HavenGo, " + firstname + "!");
                 fetchBackendNotifications();
                 addActivity("signup", "Created your HavenGo account");
+                alert("Account created successfully! Welcome " + firstname + "!");
                 saveAppState();
                 // Clear signup form
                 document.getElementById("signup-firstname").value = "";
@@ -1227,8 +1063,9 @@ async function performSignup() {
         alert("Signup failed on server. Please try again.");
         return;
     }
-    alert("Server is currently unavailable. Please try again later.");
-}
+
+    // Backend unavailable — online-only, cannot sign up
+    alert("Cannot create account: Server is currently unavailable. Please try again later.");
 
 async function performLogin() {
     var identifier = sanitizeInput(document.getElementById("login-identifier").value.trim());
@@ -1255,17 +1092,13 @@ async function performLogin() {
                 });
                 var adminData = await adminResp.json();
                 if (adminData.success) {
-                    globalNotifications = [];
                     window.__HAVENGO_JWT__ = adminData.token;
                     closeAuthModal();
                     adminLoginSuccess();
                     return;
                 }
-                alert(adminData.error || "Invalid admin credentials");
-            } catch(e) {
-                alert("Network error. Could not verify admin credentials.");
-            }
-            return; // Don't fall through to customer login for admin credentials
+            } catch(e) {}
+            // Admin login failed — fall through to customer login
         }
 
         // Customer login
@@ -1278,12 +1111,7 @@ async function performLogin() {
             var data = await resp.json();
             if (data.success) {
                 currentUser = data.user;
-                currentUser._plainPass = password;
                 window.__HAVENGO_JWT__ = data.token;
-                globalNotifications = [];
-                bookings = [];
-                pendingPayments = [];
-                demoPendingPayments = [];
                 closeAuthModal();
                 updateProfileWithUser();
                 renderProfilePage();
@@ -1291,21 +1119,26 @@ async function performLogin() {
                 addNotification("\uD83D\uDD13", "Logged In", "Welcome back, " + data.user.firstname + "!");
                 fetchBackendNotifications();
                 fetchCustomerBookings();
+                saveAppState();
                 return;
             }
+            // Backend returned a proper error response
             if (data.user_not_found) {
-                alert("Your account was not found. Please sign up again.");
-                showAuthModal("signup");
+                alert("Your account no longer exists on the server. Please sign up again.");
                 return;
             }
-        } catch(e) {}
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+        } catch(e) {
+            // Network error — backend unreachable
+            alert("Cannot log in: Server is currently unavailable. Please try again later.");
+            return;
+        }
     }
-    if (backendAvail) {
-        alert("Unable to log in. Your account data was lost due to a server reset. Please sign up again.");
-        showAuthModal("signup");
-    } else {
-        alert("Server is currently unavailable. Please try again later.");
-    }
+
+    alert("Cannot log in: Server is currently unavailable. Please try again later.");
 }
 
 function logout() {
@@ -1565,7 +1398,6 @@ function renderNotificationsModal() {
             "<p class=\"font-medium " + titleClass + "\">" + n.title + "</p>" +
             "<p class=\"text-sm text-gray-600\">" + n.message + "</p>" +
             "<p class=\"text-xs text-gray-400 mt-1\">" + n.time + "</p>" +
-            "<button onclick=\"deleteNotification(" + i + ")\" class=\"text-xs text-red-500 hover:text-red-700 ml-auto\"><i class=\"fa-solid fa-trash-can\"></i></button>" +
             "</div></div></div>";
     }
     list.innerHTML = html;
@@ -1589,7 +1421,6 @@ function renderProfileNotifications() {
             "<p class=\"font-medium text-sm\">" + n.title + "</p>" +
             "<p class=\"text-xs text-gray-600\">" + n.message + "</p>" +
             "<p class=\"text-xs text-gray-400 mt-1\">" + n.time + "</p>" +
-            "<button onclick=\"deleteNotification(" + i + ")\" class=\"text-xs text-red-500 hover:text-red-700 ml-auto\"><i class=\"fa-solid fa-trash-can\"></i></button>" +
             "</div></div></div>";
     }
     container.innerHTML = "<div class=\"flex justify-between items-center mb-4\">" +
@@ -1612,28 +1443,26 @@ function setDepositAmount(amount) {
     document.getElementById("deposit-amount-input").value = amount;
 }
 
-async function processDeposit() {
+function processDeposit() {
     if (!currentUser) { alert("Please login first to deposit funds"); showAuthModal("login"); return; }
     var amount = parseInt(document.getElementById("deposit-amount-input").value) || 0;
     var phone = document.getElementById("deposit-phone").value.trim();
-    if (amount < 1000) { alert("Minimum deposit is 1,000 UGX"); return; }
-    if (!phone || phone.length < 8) { alert("Please enter a valid Mobile Money number"); return; }
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); return; }
-    try {
-        var resp = await fetch(HAVENGO_BACKEND_URL + "/api/customer/deposit", {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: amount })
-        });
-        var data = await resp.json();
-        if (data.session_expired) { handleSessionExpired(); return; }
-        if (!resp.ok) { alert(data.error || "Deposit failed"); return; }
-    } catch(e) { alert("Network error. Deposit cannot be processed."); return; }
+
+    if (amount < 1000) {
+        alert("Minimum deposit is 1,000 UGX");
+        return;
+    }
+    if (!phone || phone.length < 8) {
+        alert("Please enter a valid Mobile Money number");
+        return;
+    }
+
     userBalance += amount;
     closeModal("deposit-modal");
     renderProfilePage();
     addNotification("\uD83D\uDCB0", "Deposit Successful", "UGX " + amount.toLocaleString() + " added to your wallet via " + phone);
     addActivity("deposit", "Deposited UGX " + amount.toLocaleString());
+    alert("Successfully deposited UGX " + amount.toLocaleString() + "!");
     saveAppState();
 }
 
@@ -1729,71 +1558,23 @@ function showPaymentsPending() {
     document.getElementById("payment-confirm-modal").classList.remove("hidden");
 }
 
-async function reportPaymentIssue(taskId, reason) {
-    if (!reason) {
-        var pending = [];
-        for (var i = 0; i < pendingPayments.length; i++) {
-            if (!pendingPayments[i].paid) pending.push(pendingPayments[i]);
-        }
-        for (var i = 0; i < demoPendingPayments.length; i++) {
-            if (!demoPendingPayments[i].paid) pending.push(demoPendingPayments[i]);
-        }
-        if (pending.length === 0) return;
-        reason = prompt("Please describe the issue with this payment:");
-        taskId = pending[0].taskId || pending[0].id;
-    }
-    if (!reason) return;
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); closeModal("payment-confirm-modal"); return; }
-    try {
-        var resp = await fetch(HAVENGO_BACKEND_URL + "/api/customer/report-payment-issue", {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-            body: JSON.stringify({ taskId: taskId, reason: reason })
-        });
-        var data = await resp.json();
-        if (data.session_expired) { handleSessionExpired(); closeModal("payment-confirm-modal"); return; }
-        if (data.success) {
-            addNotification("\u26A0\uFE0F", "Issue Reported", "Your issue has been reported. Auto-payment has been halted pending admin review.");
-            closeModal("payment-confirm-modal");
-            return;
-        }
-    } catch(e) { alert("Network error reporting issue"); closeModal("payment-confirm-modal"); return; }
-    // Also halt local auto-payment countdown
-    for (var i = 0; i < pendingPayments.length; i++) {
-        if (pendingPayments[i].taskId === taskId) { pendingPayments[i].status = "disputed"; break; }
-    }
-    for (var i = 0; i < demoPendingPayments.length; i++) {
-        if (demoPendingPayments[i].taskId === taskId) { demoPendingPayments[i].status = "disputed"; break; }
-    }
-    addNotification("\u26A0\uFE0F", "Issue Reported", "Your issue has been noted.");
-    closeModal("payment-confirm-modal");
-    saveAppState();
-}
-
 async function confirmPayment() {
     var pending = [];
     for (var i = 0; i < pendingPayments.length; i++) {
         if (!pendingPayments[i].paid) pending.push(pendingPayments[i]);
     }
-    // Also check demo pending payments
-    for (var i = 0; i < demoPendingPayments.length; i++) {
-        if (!demoPendingPayments[i].paid) pending.push(demoPendingPayments[i]);
-    }
     if (pending.length === 0) return;
     var payment = pending[0];
 
     if (!currentUser) { alert("Please login first to confirm payment"); showAuthModal("login"); return; }
-    
-    // Check balance based on mode
-    var balanceToCheck = isDemoMode ? demoUserBalance : userBalance;
-    if (balanceToCheck < payment.amount) {
+    if (userBalance < payment.amount) {
         alert("Insufficient balance. Please deposit funds first.");
         closeModal("payment-confirm-modal");
         return;
     }
 
-    // Try backend first to deduct and confirm payment (only if not in demo mode)
-    if (!isDemoMode && window.__HAVENGO_JWT__) {
+    // Try backend first to deduct and confirm payment
+    if (window.__HAVENGO_JWT__) {
         try {
             var resp = await fetch(HAVENGO_BACKEND_URL + "/api/customer/confirm-payment", {
                 method: "POST",
@@ -1808,18 +1589,11 @@ async function confirmPayment() {
                 return;
             }
         } catch(e) {
-            alert("Network error confirming payment. Please try again.");
-            closeModal("payment-confirm-modal");
-            return;
+            // Fall through to local deduction
         }
     }
 
-    // Deduct payment based on mode
-    if (isDemoMode) {
-        demoUserBalance -= payment.amount;
-    } else {
-        userBalance -= payment.amount;
-    }
+    userBalance -= payment.amount;
     payment.paid = true;
 
     // 85/15 split: provider gets 85%, system gets 15%
@@ -1851,26 +1625,7 @@ async function confirmPayment() {
             }
         }
     }
-    
-    // In demo mode, auto-start next payment if there are more pending
-    if (isDemoMode) {
-        var remainingPending = false;
-        for (var i = 0; i < demoPendingPayments.length; i++) {
-            if (!demoPendingPayments[i].paid) {
-                remainingPending = true;
-                break;
-            }
-        }
-        if (remainingPending && demoPendingPayments.length > 0) {
-            // Find next unpaid demo payment and start its countdown
-            for (var i = 0; i < demoPendingPayments.length; i++) {
-                if (!demoPendingPayments[i].paid) {
-                    startPaymentCountdown(demoPendingPayments[i].id);
-                    break;
-                }
-            }
-        }
-    }
+    alert("Payment of UGX " + payment.amount.toLocaleString() + " confirmed successfully!");
 }
 
 // ============================================================
@@ -1886,13 +1641,12 @@ function renderProfilePage() {
     if (orderCount) orderCount.textContent = bookings.length;
     if (balanceDisplay) balanceDisplay.textContent = userBalance.toLocaleString() + " UGX";
     if (accountBalance) accountBalance.textContent = userBalance.toLocaleString() + " UGX";
-    if (providersCount) providersCount.textContent = favoriteProviders.length;
+    if (providersCount) providersCount.textContent = registeredProviders.length;
 
     renderRecentActivity();
     renderPaymentMethods();
     renderSavedAddresses();
     renderProfileNotifications();
-    renderFavoriteProviders();
 
     var delContainer = document.getElementById("delete-account-container");
     if (delContainer) {
@@ -1913,34 +1667,6 @@ function renderProfilePage() {
             pic.classList.add("hidden");
         }
     }
-}
-
-function renderFavoriteProviders() {
-    var container = document.getElementById("favorite-providers-list");
-    if (!container) return;
-    var favProviders = [];
-    for (var i = 0; i < registeredProviders.length; i++) {
-        var p = registeredProviders[i];
-        if (favoriteProviders.indexOf(p.email || p.name) > -1) {
-            favProviders.push(p);
-        }
-    }
-    if (favProviders.length === 0) {
-        container.innerHTML = "<div class=\"text-center text-gray-400 py-4\"><i class=\"fa-regular fa-heart text-2xl mb-2\"></i><p class=\"text-sm\">No favorite providers yet. Browse services and heart the ones you like!</p></div>";
-        return;
-    }
-    var html = "";
-    for (var i = 0; i < favProviders.length; i++) {
-        var p = favProviders[i];
-        var displayName = p.business_name || p.businessName || p.name;
-        html += "<div class=\"flex items-center justify-between bg-gray-50 rounded-2xl p-3\">" +
-            "<div class=\"flex items-center gap-3\">" +
-            "<span class=\"text-2xl\">" + (p.bitmoji || "\uD83D\uDC64") + "</span>" +
-            "<div><p class=\"font-medium\">" + displayName + "</p>" +
-            "<p class=\"text-xs text-gray-500\">" + (p.service || "Service Provider") + "</p></div></div>" +
-            "<button onclick=\"toggleFavoriteProvider('" + (p.email || p.name).replace(/'/g,"\\'") + "')\" class=\"text-red-500 text-lg\"><i class=\"fa-solid fa-heart\"></i></button></div>";
-    }
-    container.innerHTML = html;
 }
 
 function addActivity(type, description) {
@@ -2171,6 +1897,7 @@ function toggleDarkMode() {
     document.documentElement.classList.toggle("dark");
     var stars = document.getElementById("stars-container");
     if (stars) stars.classList.toggle("hidden");
+    localStorage.setItem("havengo-dark", document.documentElement.classList.contains("dark") ? "1" : "0");
 }
 
 function createStars() {
@@ -2222,6 +1949,7 @@ function setTheme(theme) {
     if (theme !== "default") document.documentElement.classList.add("theme-" + theme);
     var menu = document.getElementById("theme-menu");
     if (menu) menu.classList.add("hidden");
+    localStorage.setItem("havengo-theme", theme);
 }
 
 function searchServices() {
@@ -2429,20 +2157,10 @@ function calculateDynamicPrice(serviceId) {
 
 async function placeOrder(event) {
     event.preventDefault();
-    if (!currentUser) { alert("Please login first to place an order"); showAuthModal("login"); return; }
+    if (!window.__HAVENGO_JWT__) { alert("Please login first to place an order"); showAuthModal("login"); return; }
     if (!currentService) return;
     var finalPrice = calculateDynamicPrice(currentService.id);
-    
-    // Check balance - for now services are free, but we still check balance for demo consistency
-    // In a real system, this would check if user has enough funds to pay for the service
-    var balanceToCheck = isDemoMode ? demoUserBalance : userBalance;
-    if (balanceToCheck < finalPrice) { 
-        alert("Insufficient balance. Please deposit at least UGX " + finalPrice.toLocaleString() + " to book this service."); 
-        closeModal("checkout-modal"); 
-        showDepositModal(); 
-        return; 
-    }
-    
+    if (userBalance < finalPrice) { alert("Insufficient balance. Please deposit at least UGX " + finalPrice.toLocaleString() + " to book this service."); closeModal("checkout-modal"); showDepositModal(); return; }
     var date = document.getElementById("booking-date").value;
     var time = document.getElementById("booking-time").value;
     var address = sanitizeInput(document.getElementById("address-input").value.trim());
@@ -2454,159 +2172,82 @@ async function placeOrder(event) {
     }
 
     var finalPrice = calculateDynamicPrice(currentService.id);
+
+    // Try backend first
     var apiUrl = HAVENGO_BACKEND_URL + "/api";
     var backendOk = await checkBackend();
 
-    var assignedProvider = currentSelectedProvider || "";
-    if (!assignedProvider) {
-        for (var pi = 0; pi < registeredProviders.length; pi++) {
-            var rp = registeredProviders[pi];
-            if (rp.services) {
-                for (var ps = 0; ps < rp.services.length; ps++) {
-                    if (rp.services[ps].id === currentService.id) { assignedProvider = rp.name; break; }
+    if (backendOk && window.__HAVENGO_JWT__) {
+        var assignedProvider = currentSelectedProvider || "";
+        if (!assignedProvider) {
+            for (var pi = 0; pi < registeredProviders.length; pi++) {
+                var rp = registeredProviders[pi];
+                if (rp.services) {
+                    for (var ps = 0; ps < rp.services.length; ps++) {
+                        if (rp.services[ps].id === currentService.id) { assignedProvider = rp.name; break; }
+                    }
                 }
+                if (assignedProvider) break;
             }
-            if (assignedProvider) break;
         }
+        try {
+            var orderResp = await fetch(apiUrl + "/customer/place-order", {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    serviceId: currentService.id, serviceName: currentService.name,
+                    providerName: assignedProvider, price: finalPrice,
+                    address: address, details: instructions + " | Date: " + date + " Time: " + time
+                })
+            });
+            var orderData = await orderResp.json();
+            if (orderData.success) {
+                // Add to local arrays so customer sees it immediately
+                var booking = {
+                    id: orderData.taskId || orderData.id || Date.now(),
+                    serviceId: currentService.id,
+                    serviceName: currentService.name,
+                    price: finalPrice,
+                    date: date, time: time, address: address, instructions: instructions,
+                    status: "Pending",
+                    customerName: currentUser ? (currentUser.name || currentUser.firstname + " " + currentUser.lastname) : "Guest User",
+                    customerPhone: currentUser ? currentUser.phone : "+256 777 062 518",
+                    providerName: assignedProvider
+                };
+                bookings.push(booking);
+                providerTasks.push({
+                    id: booking.id,
+                    serviceName: booking.serviceName,
+                    customerName: booking.customerName,
+                    customerPhone: booking.customerPhone,
+                    address: booking.address,
+                    date: booking.date,
+                    time: booking.time,
+                    price: booking.price,
+                    status: "pending_confirmation",
+                    instructions: booking.instructions,
+                    providerName: assignedProvider
+                });
+                closeModal("checkout-modal");
+                renderBookings();
+                addNotification("\uD83D\uDCCB", "New Booking Placed", currentService.name + " on " + date + " at " + time);
+                addActivity("booking", "Booked " + currentService.name + " for " + date);
+                alert("Order placed successfully! Your provider will be notified.");
+                saveAppState();
+                return;
+            }
+            if (orderData.session_expired) { handleSessionExpired(); return; }
+            if (orderData.error) { alert(orderData.error); return; }
+        } catch(e) {}
+        alert("Failed to place order on server. Please try again.");
+        return;
     }
 
-    // Order placement MUST be online-only - requires backend and JWT
-    if (!(backendOk && window.__HAVENGO_JWT__)) {
-        alert("Please login to place an order.");
-        showAuthModal("login");
+    if (!backendOk) {
+        alert("Cannot place order: Server is currently unavailable. Please try again later.");
         return;
     }
-    
-    try {
-        var orderResp = await fetch(apiUrl + "/customer/place-order", {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                serviceId: currentService.id, serviceName: currentService.name,
-                providerName: assignedProvider, price: finalPrice,
-                address: address, details: instructions + " | Date: " + date + " Time: " + time
-            })
-        });
-        var orderData = await orderResp.json();
-        if (orderData.success) {
-            var booking = {
-                id: orderData.taskId || orderData.id || Date.now(),
-                serviceId: currentService.id, serviceName: currentService.name,
-                price: finalPrice, date: date, time: time, address: address, instructions: instructions,
-                status: "Pending",
-                customerName: currentUser ? (currentUser.name || currentUser.firstname + " " + currentUser.lastname) : "Guest User",
-                customerPhone: currentUser ? currentUser.phone : "+256 777 062 518",
-                providerName: assignedProvider
-            };
-            bookings.push(booking);
-            providerTasks.push({
-                id: booking.id, serviceName: booking.serviceName,
-                customerName: booking.customerName, customerPhone: booking.customerPhone,
-                address: booking.address, date: booking.date, time: booking.time,
-                price: booking.price, status: "pending_confirmation",
-                instructions: booking.instructions, providerName: assignedProvider
-            });
-            closeModal("checkout-modal");
-            renderBookings();
-            addNotification("\uD83D\uDCCB", "New Booking Placed", currentService.name + " on " + date + " at " + time);
-            addActivity("booking", "Booked " + currentService.name + " for " + date);
-            
-            // In demo mode, also create a pending payment for testing the payment flow
-            // In real mode, this would be created when the provider completes the task
-            if (isDemoMode) {
-                var demoPayment = {
-                    id: Date.now(),
-                    taskId: booking.id,
-                    taskName: currentService.name,
-                    providerName: assignedProvider,
-                    amount: finalPrice,
-                    date: date,
-                    time: time,
-                    address: address,
-                    instructions: instructions,
-                    timestamp: new Date().toISOString(),
-                    paid: false
-                };
-                demoPendingPayments.push(demoPayment);
-            }
-            
-            saveAppState();
-            return;
-        }
-        if (orderData.session_expired && currentUser) {
-            // Backend user record was removed (e.g. DB reset) — restore silently and retry
-            var reAuthOk = false;
-            if (currentUser._plainPass) {
-                try {
-                    var restoreResp = await fetch(apiUrl + "/auth/login", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            identifier: currentUser.email,
-                            password: currentUser._plainPass,
-                            restoring: true,
-                            firstname: currentUser.firstname || "",
-                            lastname: currentUser.lastname || "",
-                            phone: currentUser.phone || "",
-                            bitmoji: currentUser.bitmoji || "\uD83D\uDE0A"
-                        })
-                    });
-                    var restoreData = await restoreResp.json();
-                    if (restoreData.success) {
-                        window.__HAVENGO_JWT__ = restoreData.token;
-                        currentUser.balance = restoreData.user.balance;
-                        saveAppState();
-                        reAuthOk = true;
-                    }
-                } catch(e) {}
-            }
-            if (reAuthOk) {
-                orderResp = await fetch(apiUrl + "/customer/place-order", {
-                    method: "POST",
-                    headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        serviceId: currentService.id, serviceName: currentService.name,
-                        providerName: assignedProvider, price: finalPrice,
-                        address: address, details: instructions + " | Date: " + date + " Time: " + time
-                    })
-                });
-                orderData = await orderResp.json();
-                if (orderData.success) {
-                    var booking2 = {
-                        id: orderData.taskId || orderData.id || Date.now(),
-                        serviceId: currentService.id, serviceName: currentService.name,
-                        price: finalPrice, date: date, time: time, address: address, instructions: instructions,
-                        status: "Pending",
-                        customerName: currentUser ? (currentUser.name || currentUser.firstname + " " + currentUser.lastname) : "Guest User",
-                        customerPhone: currentUser ? currentUser.phone : "+256 777 062 518",
-                        providerName: assignedProvider
-                    };
-                    bookings.push(booking2);
-                    providerTasks.push({
-                        id: booking2.id, serviceName: booking2.serviceName,
-                        customerName: booking2.customerName, customerPhone: booking2.customerPhone,
-                        address: booking2.address, date: booking2.date, time: booking2.time,
-                        price: booking2.price, status: "pending_confirmation",
-                        instructions: booking2.instructions, providerName: assignedProvider
-                    });
-                    closeModal("checkout-modal");
-                    renderBookings();
-                    addNotification("\uD83D\uDCCB", "New Booking Placed", currentService.name + " on " + date + " at " + time);
-                    addActivity("booking", "Booked " + currentService.name + " for " + date);
-                    saveAppState();
-                    return;
-                }
-            }
-            alert("Session expired. Please login again.");
-            showAuthModal("login");
-            return;
-        }
-        if (orderData.error) { alert(orderData.error); return; }
-    } catch(e) {
-        alert("Network error placing order. Please try again.");
-        return;
-    }
-    alert("Failed to place order.");
+    alert("Failed to place order on server. Please try again.");
 }
 
 // Fetch customer bookings from backend for cross-browser sync
@@ -2619,39 +2260,36 @@ async function fetchCustomerBookings() {
         if (resp.ok) {
             var data = await resp.json();
             var allTasks = (data.active || []).concat(data.completed || []);
-            if (allTasks.length > 0) {
-                for (var bi = 0; bi < allTasks.length; bi++) {
-                    var b = allTasks[bi];
-                    var exists = bookings.some(function(lb) { return lb.id === b.id || lb.id === b.task_id; });
-                    if (!exists) {
-                        var bookingDate = "", bookingTime = "";
-                        if (b.details) {
-                            var dateMatch = b.details.match(/Date:\s*([^|]+)/);
-                            var timeMatch = b.details.match(/Time:\s*([^|]+)/);
-                            if (dateMatch) bookingDate = dateMatch[1].trim();
-                            if (timeMatch) bookingTime = timeMatch[1].trim();
-                        }
-                        var status = b.status || "Pending";
-                        if (status === "pending_confirmation") status = "Pending";
-                        else if (status === "active") status = "In Progress";
-                        bookings.push({
-                            id: b.id || b.task_id,
-                            serviceId: b.service_id || "",
-                            serviceName: b.service_name || "Service",
-                            price: b.price || 0,
-                            date: bookingDate,
-                            time: bookingTime,
-                            address: b.address || "",
-                            status: status,
-                            customerName: currentUser ? currentUser.name : "",
-                            customerPhone: currentUser ? currentUser.phone : "",
-                            providerName: b.provider_name || "",
-                            details: b.details || ""
-                        });
-                    }
+            // Replace local bookings with backend data (online-only)
+            bookings = [];
+            for (var bi = 0; bi < allTasks.length; bi++) {
+                var b = allTasks[bi];
+                var bookingDate = "", bookingTime = "";
+                if (b.details) {
+                    var dateMatch = b.details.match(/Date:\s*([^|]+)/);
+                    var timeMatch = b.details.match(/Time:\s*([^|]+)/);
+                    if (dateMatch) bookingDate = dateMatch[1].trim();
+                    if (timeMatch) bookingTime = timeMatch[1].trim();
                 }
-                renderBookings();
+                var status = b.status || "Pending";
+                if (status === "pending_confirmation") status = "Pending";
+                else if (status === "active") status = "In Progress";
+                bookings.push({
+                    id: b.id || b.task_id,
+                    serviceId: b.service_id || "",
+                    serviceName: b.service_name || "Service",
+                    price: b.price || 0,
+                    date: bookingDate,
+                    time: bookingTime,
+                    address: b.address || "",
+                    status: status,
+                    customerName: currentUser ? currentUser.name : "",
+                    customerPhone: currentUser ? currentUser.phone : "",
+                    providerName: b.provider_name || "",
+                    details: b.details || ""
+                });
             }
+            renderBookings();
         }
     } catch(e) {}
 }
@@ -2715,8 +2353,6 @@ async function loginAsProvider() {
             if (data.success) {
                 var p = data.provider;
                 window.__HAVENGO_JWT__ = data.token;
-                providerTasks = [];
-                completedTasks = [];
                 currentLoggedProvider = {
                     id: p.id,
                     name: p.firstname + " " + p.lastname,
@@ -2734,7 +2370,6 @@ async function loginAsProvider() {
                     business_name: p.business_name || "",
                     registration_fee_paid: p.registration_fee_paid || 0
                 };
-                globalNotifications = [];
                 enterProviderDashboard(currentLoggedProvider);
                 return;
             }
@@ -2742,17 +2377,11 @@ async function loginAsProvider() {
                 alert("Your account is pending admin verification. Please wait for an administrator to approve your application before logging in.");
                 return;
             }
-            if (data.user_not_found) {
-                alert("Your account was not found. Please sign up again.");
-                return;
-            }
         } catch(e) {}
+        // Backend failed, fall through to local
     }
-    if (backendOk) {
-        alert("Unable to log in. Your provider account was not found. Please sign up again.");
-    } else {
-        alert("Server is currently unavailable. Please try again later.");
-    }
+
+    alert("Cannot log in: Server is currently unavailable. Please try again later.");
 }
 
 async function enterProviderDashboard(provider) {
@@ -2776,41 +2405,43 @@ async function enterProviderDashboard(provider) {
             var tasksResp = await fetch(apiUrl + "/provider/tasks", { headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ } });
             if (tasksResp.ok) {
                 var backendTasks = await tasksResp.json();
+                providerTasks = [];
                 for (var ti = 0; ti < backendTasks.length; ti++) {
                     var bt = backendTasks[ti];
-                    var existing = providerTasks.some(function(pt) { return pt.id === bt.id; });
-                    if (!existing) {
-                        providerTasks.push({
-                            id: bt.id, serviceId: bt.service_id, serviceName: bt.service_name,
-                            customerName: "", customerPhone: "", address: bt.address || "",
-                            date: "", time: "", price: bt.price, instructions: bt.details || "",
-                            providerName: bt.provider_name || "", status: bt.status
-                        });
-                    }
-                }
-            } else {
-                var errData = await tasksResp.json().catch(function() { return {}; });
-                if (errData.error && errData.error.indexOf("not found") !== -1) {
-                    window.__HAVENGO_JWT__ = null;
+                    providerTasks.push({
+                        id: bt.id,
+                        serviceId: bt.service_id,
+                        serviceName: bt.service_name,
+                        customerName: "",
+                        customerPhone: "",
+                        address: bt.address || "",
+                        date: "",
+                        time: "",
+                        price: bt.price,
+                        instructions: bt.details || "",
+                        providerName: bt.provider_name || "",
+                        status: bt.status
+                    });
                 }
             }
-            if (window.__HAVENGO_JWT__) {
-                var compResp = await fetch(apiUrl + "/provider/completed-tasks", { headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ } });
-                if (compResp.ok) {
-                    var backendCompleted = await compResp.json();
-                    for (var ci = 0; ci < backendCompleted.length; ci++) {
-                        var bc = backendCompleted[ci];
-                        var existing = completedTasks.some(function(ct) { return ct.id === bc.id; });
-                        if (!existing) {
-                            completedTasks.push({
-                                id: bc.id, taskId: bc.task_id, serviceName: bc.service_name,
-                                customerName: bc.customer_email, price: bc.price,
-                                providerName: bc.provider_name, date: bc.completed_at, paid: bc.paid
-                            });
-                            if (bc.paid && bc.provider_name) {
-                                providerEarningsMap[bc.provider_name] = (providerEarningsMap[bc.provider_name] || 0) + Math.round(bc.price * 0.85);
-                            }
-                        }
+            var compResp = await fetch(apiUrl + "/provider/completed-tasks", { headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ } });
+            if (compResp.ok) {
+                var backendCompleted = await compResp.json();
+                completedTasks = [];
+                for (var ci = 0; ci < backendCompleted.length; ci++) {
+                    var bc = backendCompleted[ci];
+                    completedTasks.push({
+                        id: bc.id,
+                        taskId: bc.task_id,
+                        serviceName: bc.service_name,
+                        customerName: bc.customer_email,
+                        price: bc.price,
+                        providerName: bc.provider_name,
+                        date: bc.completed_at,
+                        paid: bc.paid
+                    });
+                    if (bc.paid && bc.provider_name) {
+                        providerEarningsMap[bc.provider_name] = (providerEarningsMap[bc.provider_name] || 0) + Math.round(bc.price * 0.85);
                     }
                 }
             }
@@ -2821,67 +2452,54 @@ async function enterProviderDashboard(provider) {
     fetchBackendNotifications();
     addNotification("\uD83D\uDD10", "Provider Login", provider.name + " logged into dashboard");
 
-    // Start provider polling every 15s for cross-browser task sync
+    // Start provider polling every 30s for cross-browser task sync
     if (window.__providerPollInterval) clearInterval(window.__providerPollInterval);
     window.__providerPollInterval = setInterval(async function() {
+        if (!window.__HAVENGO_JWT__ || !currentLoggedProvider) return;
         var apiUrl = HAVENGO_BACKEND_URL + "/api";
-        if (window.__HAVENGO_JWT__ && currentLoggedProvider) {
-            try {
-                var tasksResp = await fetch(apiUrl + "/provider/tasks", { headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ } });
-                if (tasksResp.ok) {
-                    var backendTasks = await tasksResp.json();
-                    var newTaskCount = 0;
-                    for (var ti = 0; ti < backendTasks.length; ti++) {
-                        var bt = backendTasks[ti];
-                        var existing = providerTasks.some(function(pt) { return pt.id === bt.id; });
-                        if (!existing) {
-                            providerTasks.push({
-                                id: bt.id, serviceId: bt.service_id, serviceName: bt.service_name,
-                                customerName: bt.customer_email || "", customerPhone: "", address: bt.address || "",
-                                date: "", time: "", price: bt.price, instructions: bt.details || "",
-                                providerName: bt.provider_name || "", status: bt.status
-                            });
-                            newTaskCount++;
-                        }
-                    }
-                    if (newTaskCount > 0) {
-                        addNotification("\uD83D\uDCE2", "New Order Received", "You have " + newTaskCount + " new order(s) to review!");
-                    }
-                    var compResp = await fetch(apiUrl + "/provider/completed-tasks", { headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ } });
-                    if (compResp.ok) {
-                        var backendCompleted = await compResp.json();
-                        for (var ci = 0; ci < backendCompleted.length; ci++) {
-                            var bc = backendCompleted[ci];
-                            var existing = completedTasks.some(function(ct) { return ct.id === bc.id; });
-                            if (!existing) {
-                                completedTasks.push({
-                                    id: bc.id, taskId: bc.task_id, serviceName: bc.service_name,
-                                    customerName: bc.customer_email, price: bc.price,
-                                    providerName: bc.provider_name, date: bc.completed_at, paid: bc.paid
-                                });
-                            }
-                        }
-                    }
-                    renderProviderDashboard();
-                } else {
-                    var errData = await tasksResp.json().catch(function() { return {}; });
-                    if (errData.error && errData.error.indexOf("not found") !== -1) {
-                        window.__HAVENGO_JWT__ = null;
-                        renderProviderDashboard();
+        try {
+            var tasksResp = await fetch(apiUrl + "/provider/tasks", { headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ } });
+            if (tasksResp.ok) {
+                var backendTasks = await tasksResp.json();
+                var prevCount = providerTasks.length;
+                providerTasks = [];
+                for (var ti = 0; ti < backendTasks.length; ti++) {
+                    var bt = backendTasks[ti];
+                    providerTasks.push({
+                        id: bt.id, serviceId: bt.service_id, serviceName: bt.service_name,
+                        customerName: bt.customer_email || "", customerPhone: "", address: bt.address || "",
+                        date: "", time: "", price: bt.price, instructions: bt.details || "",
+                        providerName: bt.provider_name || "", status: bt.status
+                    });
+                }
+                if (providerTasks.length > prevCount) {
+                    addNotification("\uD83D\uDCE2", "New Order Received", "You have " + (providerTasks.length - prevCount) + " new order(s) to review!");
+                }
+                var compResp = await fetch(apiUrl + "/provider/completed-tasks", { headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ } });
+                if (compResp.ok) {
+                    var backendCompleted = await compResp.json();
+                    completedTasks = [];
+                    for (var ci = 0; ci < backendCompleted.length; ci++) {
+                        var bc = backendCompleted[ci];
+                        completedTasks.push({
+                            id: bc.id, taskId: bc.task_id, serviceName: bc.service_name,
+                            customerName: bc.customer_email, price: bc.price,
+                            providerName: bc.provider_name, date: bc.completed_at, paid: bc.paid
+                        });
                     }
                 }
-            } catch(e) {}
-        }
-        // Background sync provider-admin chat messages
-        if (currentLoggedProvider) {
+                renderProviderDashboard();
+            }
+            // Background sync provider-admin chat messages
             var provEmail = currentLoggedProvider.email || currentLoggedProvider.name || "unknown";
             var chatId = "provider-admin-" + provEmail;
             if (chatConversations[chatId]) {
                 await loadChatFromStorage(chatId);
             }
+            // Fetch backend notifications
             fetchBackendNotifications();
-        }
-    }, 15000);
+        } catch(e) {}
+    }, 30000);
 }
 
 function logoutProvider() {
@@ -2946,9 +2564,9 @@ function renderProviderDashboard() {
                     "<p class=\"text-sm text-gray-600\"><strong>Price:</strong> UGX " + t.price.toLocaleString() + "</p>" +
                     (t.instructions ? "<p class=\"text-sm text-gray-600\"><strong>Instructions:</strong> " + t.instructions + "</p>" : "") +
                     "</div>" +
-                    "<div><span class=\"bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium\">" + t.status + "</span>" + (t.cancelReason ? "<p class=\"text-xs text-red-500 mt-1\"><i class=\"fa-solid fa-ban\"></i> " + t.cancelReason + "</p>" : "") + "</div></div>" +
-                    (t.status === "pending_confirmation" ? "<div class=\"mt-4 pt-4 border-t\"><button onclick=\"confirmProviderTask(" + t.id + ")\" class=\"bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-2xl text-sm\"><i class=\"fa-solid fa-check\"></i> Confirm Order</button><button onclick=\"cancelProviderTask(" + t.id + ")\" class=\"bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-2xl text-sm ml-2\"><i class=\"fa-solid fa-ban\"></i> Cancel Order</button></div>" : "") +
-                    (t.status === "active" ? "<div class=\"mt-4 pt-4 border-t\"><button onclick=\"completeProviderTask(" + t.id + ")\" class=\"bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-2xl text-sm\"><i class=\"fa-solid fa-check-double\"></i> Mark Complete</button><button onclick=\"cancelProviderTask(" + t.id + ")\" class=\"bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-2xl text-sm ml-2\"><i class=\"fa-solid fa-ban\"></i> Cancel Order</button></div>" : "") +
+                    "<div><span class=\"bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium\">" + t.status + "</span></div></div>" +
+                    (t.status === "pending_confirmation" ? "<div class=\"mt-4 pt-4 border-t\"><button onclick=\"confirmProviderTask(" + t.id + ")\" class=\"bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-2xl text-sm\"><i class=\"fa-solid fa-check\"></i> Confirm Order</button></div>" : "") +
+                    (t.status === "active" ? "<div class=\"mt-4 pt-4 border-t\"><button onclick=\"completeProviderTask(" + t.id + ")\" class=\"bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-2xl text-sm\"><i class=\"fa-solid fa-check-double\"></i> Mark Complete</button></div>" : "") +
                     "</div>";
             }
             activeList.innerHTML = html;
@@ -2997,14 +2615,28 @@ function renderProviderDashboard() {
 
 async function confirmProviderTask(taskId) {
     var apiUrl = HAVENGO_BACKEND_URL + "/api";
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); return; }
-    try {
-        var resp = await fetch(apiUrl + "/provider/confirm-task/" + taskId, {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
-        });
-        if (!resp.ok) { alert("Failed to confirm task on server"); return; }
-    } catch(e) { alert("Network error confirming task"); return; }
+    if (window.__HAVENGO_JWT__) {
+        try {
+            var resp = await fetch(apiUrl + "/provider/confirm-task/" + taskId, {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
+            });
+            if (resp.ok) {
+                for (var i = 0; i < providerTasks.length; i++) {
+                    if (providerTasks[i].id === taskId) {
+                        providerTasks[i].status = "active";
+                        providerTasks[i].providerName = currentLoggedProvider.name;
+                        addNotification("\u2705", "Order Confirmed", currentLoggedProvider.name + " confirmed order #" + taskId);
+                        break;
+                    }
+                }
+                renderProviderDashboard();
+                saveAppState();
+                return;
+            }
+        } catch(e) {}
+    }
+    // Fallback local
     for (var i = 0; i < providerTasks.length; i++) {
         if (providerTasks[i].id === taskId) {
             providerTasks[i].status = "active";
@@ -3026,15 +2658,16 @@ async function completeProviderTask(taskId) {
     if (!task) return;
     if (!confirm("Mark this task as complete? This will notify the customer to confirm payment.")) return;
 
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); return; }
     var apiUrl = HAVENGO_BACKEND_URL + "/api";
-    try {
-        var resp = await fetch(apiUrl + "/provider/complete-task/" + taskId, {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
-        });
-        if (!resp.ok) { alert("Failed to complete task on server"); return; }
-    } catch(e) { alert("Network error completing task"); return; }
+    if (window.__HAVENGO_JWT__) {
+        try {
+            var resp = await fetch(apiUrl + "/provider/complete-task/" + taskId, {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
+            });
+            if (!resp.ok) { alert("Failed to complete task on server"); return; }
+        } catch(e) { alert("Network error completing task"); return; }
+    }
 
     providerTasks.splice(taskIdx, 1);
     var completed = {
@@ -3065,35 +2698,6 @@ async function completeProviderTask(taskId) {
         if (bookings[j].id === task.id) { bookings[j].status = "Completed"; break; }
     }
     addNotification("\u2705", "Task Completed", currentLoggedProvider.name + " completed " + task.serviceName + ". Payment of UGX " + task.price.toLocaleString() + " is pending.");
-    startPaymentCountdown(pendingPayments[pendingPayments.length - 1].id);
-    renderProviderDashboard();
-    renderBookings();
-    saveAppState();
-}
-
-async function cancelProviderTask(taskId) {
-    var reason = prompt("Please provide a reason for cancellation:");
-    if (!reason) return;
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); return; }
-    var apiUrl = HAVENGO_BACKEND_URL + "/api";
-    try {
-        var resp = await fetch(apiUrl + "/provider/cancel-task/" + taskId, {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-            body: JSON.stringify({ reason: reason })
-        });
-        if (!resp.ok) { alert("Failed to cancel task on server"); return; }
-    } catch(e) { alert("Network error cancelling task"); return; }
-    for (var i = 0; i < providerTasks.length; i++) {
-        if (providerTasks[i].id === taskId) {
-            providerTasks.splice(i, 1);
-            break;
-        }
-    }
-    for (var i = 0; i < bookings.length; i++) {
-        if (bookings[i].id === taskId) { bookings[i].status = "Cancelled"; break; }
-    }
-    addNotification("\u274c", "Order Cancelled", "Order #" + taskId + " cancelled. Reason: " + reason);
     renderProviderDashboard();
     renderBookings();
     saveAppState();
@@ -3127,56 +2731,76 @@ async function requestPriceChange(serviceId, serviceName) {
     for (var i = 0; i < services.length; i++) {
         if (services[i].id === serviceId) { currentPrice = services[i].basePrice; break; }
     }
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); return; }
+
+    // Try backend first
     var apiUrl = HAVENGO_BACKEND_URL + "/api";
-    try {
-        var resp = await fetch(apiUrl + "/provider/price-request", {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-            body: JSON.stringify({ serviceId: serviceId, currentPrice: currentPrice, requestedPrice: newPrice })
-        });
-        if (!resp.ok) { alert("Failed to submit price change on server"); return; }
-    } catch(e) { alert("Network error submitting price change"); return; }
-    addNotification("\uD83D\uDCCB", "Price Request Submitted", "Price change for " + serviceName + " sent to admin.");
+    if (window.__HAVENGO_JWT__) {
+        try {
+            var resp = await fetch(apiUrl + "/provider/price-request", {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
+                body: JSON.stringify({ serviceId: serviceId, currentPrice: currentPrice, requestedPrice: newPrice })
+            });
+            if (resp.ok) {
+                alert("Price change request submitted for " + serviceName + ". Admin will review it shortly.");
+                addNotification("\uD83D\uDCCB", "Price Request Submitted", "Price change for " + serviceName + " sent to admin.");
+                return;
+            }
+        } catch(e) {}
+    }
+
+    priceChangeRequests.push({
+        id: Date.now(),
+        providerName: currentLoggedProvider.name,
+        providerEmail: currentLoggedProvider.email || "",
+        serviceId: serviceId,
+        serviceName: serviceName,
+        currentPrice: currentPrice,
+        requestedPrice: newPrice,
+        status: "pending",
+        date: new Date().toLocaleString()
+    });
+    alert("Price change request submitted for " + serviceName + ". Admin will review it shortly.");
+    addNotification("\uD83D\uDCC8", "Price Change Requested", currentLoggedProvider.name + " requested price change for " + serviceName + ": UGX " + currentPrice.toLocaleString() + " \u2192 UGX " + newPrice.toLocaleString());
+    saveAppState();
 }
 
 async function payRegistrationFee() {
     if (!currentLoggedProvider) return;
     if (!confirm("Pay 50,000 UGX registration fee to activate your account?")) return;
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); return; }
     var apiUrl = HAVENGO_BACKEND_URL + "/api";
-    try {
-        var resp = await fetch(apiUrl + "/provider/pay-registration-fee", {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
-        });
-        if (!resp.ok) { alert("Failed to process registration fee on server"); return; }
-    } catch(e) { alert("Network error. Registration fee cannot be processed."); return; }
+    if (window.__HAVENGO_JWT__) {
+        try {
+            var resp = await fetch(apiUrl + "/provider/pay-registration-fee", {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
+            });
+            if (resp.ok) {
+                currentLoggedProvider.registration_fee_paid = 1;
+                renderProviderDashboard();
+                addNotification("\u2705", "Registration Complete", "Your account is now active. You can receive orders!");
+                alert("Payment successful! Your account is now active. You can start receiving orders.");
+                saveAppState();
+                return;
+            }
+        } catch(e) {}
+    }
+    // Offline fallback
     currentLoggedProvider.registration_fee_paid = 1;
     renderProviderDashboard();
     addNotification("\u2705", "Registration Complete", "Your account is now active. You can receive orders!");
+    alert("Payment successful! (Offline mode) Your account is now active.");
     saveAppState();
 }
 
 async function loginAsAdmin() {
     var idVal = document.getElementById("admin-login-id").value.trim();
     var passVal = document.getElementById("admin-login-pass").value;
-    if (!idVal || !passVal) { alert("Please enter your credentials"); return; }
-    try {
-        var resp = await fetch(HAVENGO_BACKEND_URL + "/api/auth/admin/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ identifier: idVal, password: passVal })
-        });
-        var data = await resp.json();
-        if (data.success) {
-            window.__HAVENGO_JWT__ = data.token;
-            adminLoginSuccess();
-        } else {
-            alert(data.error || "Invalid admin credentials");
-        }
-    } catch(e) {
-        alert("Network error. Cannot verify admin credentials.");
+    var hashedInput = await hashPassword(passVal);
+    if ((idVal === "thermypetson@gmail.com" || idVal === "0757532066") && hashedInput === ADMIN_PASSWORD_HASH) {
+        adminLoginSuccess();
+    } else {
+        alert("Invalid admin credentials");
     }
 }
 
@@ -3200,14 +2824,14 @@ function adminLoginSuccess() {
     // Sync from backend
     _syncAdminData();
     fetchBackendNotifications();
-    // Start admin polling every 15s
+    // Start admin polling every 30s
     if (window.__adminPollInterval) clearInterval(window.__adminPollInterval);
     window.__adminPollInterval = setInterval(function() {
         if (currentAdmin && window.__HAVENGO_JWT__) {
             _syncAdminData();
             fetchBackendNotifications();
         }
-    }, 15000);
+    }, 30000);
 }
 
 async function _syncAdminData() {
@@ -3419,31 +3043,6 @@ async function verifyProvider(id) {
             if (registeredProviders[i].id === id) {
                 registeredProviders[i].verified = true;
                 addNotification("\u2705", "Provider Verified", registeredProviders[i].name + " has been verified by admin.");
-                
-                // If in demo mode, prompt for demo payment to continue
-                if (isDemoMode) {
-                    var confirmPayment = confirm("Your provider account has been verified! To continue with login, please complete a demo payment of 5,000 UGX for account activation.");
-                    if (confirmPayment) {
-                        // Create a demo payment for verification fee
-                        var verificationPayment = {
-                            id: Date.now(),
-                            taskId: "verification_" + id,
-                            taskName: "Provider Verification Fee",
-                            providerName: "System",
-                            amount: 5000,
-                            date: new Date().toISOString().split('T')[0],
-                            time: new Date().toTimeString().split(' ')[0],
-                            address: "N/A",
-                            instructions: "Provider account verification fee",
-                            timestamp: new Date().toISOString(),
-                            paid: false
-                        };
-                        demoPendingPayments.push(verificationPayment);
-                        // Auto-start payment countdown for demo
-                        startPaymentCountdown(verificationPayment.id);
-                        addNotification("\uD83D\uDCB0", "Demo Payment Required", "Please complete the demo payment to activate your account.");
-                    }
-                }
                 break;
             }
         }
@@ -3515,14 +3114,6 @@ function approvePriceRequest(id) {
                 }
             }
             addNotification("\u2705", "Price Approved", req.providerName + "'s price change for " + req.serviceName + " to UGX " + req.requestedPrice.toLocaleString() + " has been approved.");
-            // Notify provider via backend
-            if (window.__HAVENGO_JWT__) {
-                fetch(HAVENGO_BACKEND_URL + "/api/admin/notify-provider", {
-                    method: "POST",
-                    headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-                    body: JSON.stringify({ providerName: req.providerName, icon: "\u2705", title: "Price Approved", message: "Your price change for " + req.serviceName + " to UGX " + req.requestedPrice.toLocaleString() + " has been approved." })
-                }).catch(function(){});
-            }
             break;
         }
     }
@@ -3534,14 +3125,7 @@ function rejectPriceRequest(id) {
     for (var i = 0; i < priceChangeRequests.length; i++) {
         if (priceChangeRequests[i].id === id) {
             priceChangeRequests[i].status = "rejected";
-            addNotification("\u274C", "Price Rejected", priceChangeRequests[i].providerName + "'s price change for " + priceChangeRequests[i].serviceName + " has been rejected.");
-            if (window.__HAVENGO_JWT__) {
-                fetch(HAVENGO_BACKEND_URL + "/api/admin/notify-provider", {
-                    method: "POST",
-                    headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-                    body: JSON.stringify({ providerName: priceChangeRequests[i].providerName, icon: "\u274C", title: "Price Rejected", message: "Your price change request for " + priceChangeRequests[i].serviceName + " was rejected." })
-                }).catch(function(){});
-            }
+            addNotification("\u274C", "Price Rejected", "Price change for " + priceChangeRequests[i].serviceName + " has been rejected.");
             break;
         }
     }
@@ -3565,13 +3149,6 @@ function adjustPriceRequest(id) {
                 }
             }
             addNotification("\u2705", "Price Adjusted", req.providerName + "'s price for " + req.serviceName + " adjusted to UGX " + newPrice.toLocaleString());
-            if (window.__HAVENGO_JWT__) {
-                fetch(HAVENGO_BACKEND_URL + "/api/admin/notify-provider", {
-                    method: "POST",
-                    headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-                    body: JSON.stringify({ providerName: req.providerName, icon: "\u2705", title: "Price Adjusted", message: "Your price for " + req.serviceName + " was adjusted to UGX " + newPrice.toLocaleString() + " by admin." })
-                }).catch(function(){});
-            }
             break;
         }
     }
@@ -3650,15 +3227,25 @@ function renderAdminChat() {
             html += "<div class=\"bg-white rounded-2xl p-4 shadow flex justify-between items-center mb-2 border-l-4 border-amber-600\"><div><p class=\"font-semibold\">" + p.name + "</p><p class=\"text-xs text-gray-500\">" + (p.service || "Provider") + " \u2022 " + (p.location || "") + "</p></div><button onclick=\"openAdminProviderChat('" + provEmail + "','" + p.name.replace(/'/g,"\\'") + "')\" class=\"bg-amber-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-comment\"></i> Chat</button></div>";
         }
     }
-    // Task conversations (only show from backend-synced chat data, not stale local state)
-    var taskChatKeys = [];
-    for (var key in chatConversations) {
-        if (!isNaN(parseInt(key)) && taskChatKeys.indexOf(key) === -1) taskChatKeys.push(key);
+    // Task conversations
+    var allTaskIds = [];
+    for (var i = 0; i < providerTasks.length; i++) {
+        if (allTaskIds.indexOf(providerTasks[i].id) === -1) allTaskIds.push(providerTasks[i].id);
     }
-    if (taskChatKeys.length > 0) {
+    for (var i = 0; i < completedTasks.length; i++) {
+        if (allTaskIds.indexOf(completedTasks[i].id) === -1) allTaskIds.push(completedTasks[i].id);
+    }
+    if (allTaskIds.length > 0) {
         html += "<h4 class=\"font-semibold mb-3 mt-6 text-gray-700\">Task Conversations</h4>";
-        for (var i = 0; i < taskChatKeys.length; i++) {
-            html += "<div class=\"bg-white rounded-2xl p-4 shadow flex justify-between items-center mb-2 border-l-4 border-gray-400\"><div><p class=\"font-semibold\">Task #" + taskChatKeys[i] + "</p></div><button onclick=\"openAdminChat(" + taskChatKeys[i] + ")\" class=\"bg-amber-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-comment\"></i> Chat</button></div>";
+        for (var i = 0; i < allTaskIds.length; i++) {
+            var taskId = allTaskIds[i];
+            var task = null;
+            for (var j = 0; j < providerTasks.length; j++) {
+                if (providerTasks[j].id === taskId) { task = providerTasks[j]; break; }
+            }
+            if (!task) { for (var j = 0; j < completedTasks.length; j++) { if (completedTasks[j].id === taskId) { task = completedTasks[j]; break; } } }
+            if (!task) continue;
+            html += "<div class=\"bg-white rounded-2xl p-4 shadow flex justify-between items-center\"><div><p class=\"font-semibold\">" + (task.serviceName || "Task") + "</p><p class=\"text-xs text-gray-500\">" + (task.customerName || "Customer") + " \u2022 " + (task.providerName || "Provider") + "</p></div><button onclick=\"openAdminChat(" + taskId + ")\" class=\"bg-amber-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-comment\"></i> Chat</button></div>";
         }
     }
     if (html === "") {
@@ -3743,141 +3330,43 @@ setInterval(function() {
     }
 }, 3000);
 
-let mapInstance = null;
-let mapMarker = null;
-
-function openMapPicker() {
-    closeModal('checkout-modal');
-    document.getElementById('map-picker-modal').classList.remove('hidden');
-    setTimeout(function() {
-        if (mapInstance) mapInstance.invalidateSize();
-        else {
-            var lat = window.__userLat || 0.3136;
-            var lng = window.__userLng || 32.5825;
-            mapInstance = L.map('map-picker').setView([lat, lng], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '\u00A9 OpenStreetMap'
-            }).addTo(mapInstance);
-            mapMarker = L.marker([lat, lng], { draggable: true }).addTo(mapInstance);
-            mapMarker.on('dragend', function(e) {
-                var pos = e.target.getLatLng();
-                updateMapLocationInfo(pos.lat, pos.lng);
-            });
-            mapInstance.on('click', function(e) {
-                if (mapMarker) mapMarker.setLatLng(e.latlng);
-                else mapMarker = L.marker(e.latlng, { draggable: true }).addTo(mapInstance);
-                updateMapLocationInfo(e.latlng.lat, e.latlng.lng);
-            });
-            updateMapLocationInfo(lat, lng);
-        }
-    }, 300);
-}
-
-function updateMapLocationInfo(lat, lng) {
-    document.getElementById('map-location-info').textContent = '\uD83D\uDCCD ' + lat.toFixed(6) + ', ' + lng.toFixed(6);
-}
-
-function searchMapLocation(event) {
-    if (event.key === 'Enter') {
-        var q = document.getElementById('map-search-input').value.trim();
-        if (!q || !mapInstance) return;
-        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(q + ', Kampala, Uganda'))
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (data && data.length > 0) {
-                    var lat = parseFloat(data[0].lat);
-                    var lng = parseFloat(data[0].lon);
-                    mapInstance.setView([lat, lng], 15);
-                    if (mapMarker) mapMarker.setLatLng([lat, lng]);
-                    else mapMarker = L.marker([lat, lng], { draggable: true }).addTo(mapInstance);
-                    updateMapLocationInfo(lat, lng);
-                }
-            }).catch(function(){});
-    }
-}
-
-function confirmMapLocation() {
-    if (mapMarker) {
-        var pos = mapMarker.getLatLng();
-        window.__selectedLat = pos.lat;
-        window.__selectedLng = pos.lng;
-        document.getElementById('address-input').value = pos.lat.toFixed(6) + ', ' + pos.lng.toFixed(6);
-    }
-    closeModal('map-picker-modal');
-    document.getElementById('checkout-modal').classList.remove('hidden');
-}
-
 function startTracking(bookingId) {
-    if (!bookingId) return;
-    // Show tracking modal
-    var booking = null;
-    for (var i = 0; i < bookings.length; i++) {
-        if (bookings[i].id === bookingId) { booking = bookings[i]; break; }
-    }
-    if (!booking) return;
-    closeModal('checkout-modal');
-    document.getElementById('tracking-modal').classList.remove('hidden');
-    document.getElementById('tracking-service-name').textContent = booking.serviceName || 'Your Order';
-    document.getElementById('tracking-provider-name').textContent = booking.providerName || 'Provider';
-    document.getElementById('tracking-address').textContent = booking.address || 'Your location';
-    document.getElementById('tracking-eta').textContent = 'Calculating...';
-    
-    // Initialize tracking map
-    setTimeout(function() {
-        var lat = window.__userLat || 0.3136;
-        var lng = window.__userLng || 32.5825;
-        if (window.__trackingMap) window.__trackingMap.remove();
-        window.__trackingMap = L.map('tracking-map').setView([lat, lng], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(window.__trackingMap);
-        // Customer marker (blue)
-        L.circleMarker([lat, lng], { radius: 10, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.5 }).addTo(window.__trackingMap).bindPopup('Your Location');
-        // Simulated provider marker (green) - in real app, this would come from backend
-        var provLat = lat + (Math.random() - 0.5) * 0.02;
-        var provLng = lng + (Math.random() - 0.5) * 0.02;
-        window.__provMarker = L.marker([provLat, provLng], { icon: L.divIcon({ className: '', html: '<div style="background:#10b981;color:white;padding:4px 8px;border-radius:12px;font-size:12px;font-weight:bold;">\uD83D\uDE97 Provider</div>' }) }).addTo(window.__trackingMap);
-        // Calculate ETA
-        updateTrackingETA(lat, lng, provLat, provLng);
-        // Simulate provider movement towards customer
-        window.__trackingInterval = setInterval(function() {
-            if (window.__provMarker) {
-                var pos = window.__provMarker.getLatLng();
-                var distLat = lat - pos.lat;
-                var distLng = lng - pos.lng;
-                if (Math.abs(distLat) < 0.0005 && Math.abs(distLng) < 0.0005) {
-                    clearInterval(window.__trackingInterval);
-                    addNotification('\uD83D\uDCCD', 'Provider Arrived', booking.providerName + ' has arrived at your location!');
-                    document.getElementById('tracking-eta').textContent = 'Arrived!';
-                    return;
-                }
-                var step = 0.05;
-                var newLat = pos.lat + distLat * step;
-                var newLng = pos.lng + distLng * step;
-                window.__provMarker.setLatLng([newLat, newLng]);
-                window.__trackingMap.setView([newLat, newLng], 13);
-                updateTrackingETA(lat, lng, newLat, newLng);
-                document.getElementById('tracking-status').textContent = 'Provider is on the way...';
+    var nameEl = document.getElementById("tracking-provider-name");
+    var serviceEl = document.getElementById("tracking-service-name");
+    var etaEl = document.getElementById("tracking-eta-value");
+    var contactEl = document.getElementById("tracking-provider-contact");
+    if (nameEl) nameEl.textContent = "Provider Assigned";
+    if (contactEl) contactEl.textContent = "";
+    if (serviceEl && currentLoggedProvider) serviceEl.textContent = currentLoggedProvider.service || currentLoggedProvider.name || "Service";
+    if (etaEl) etaEl.textContent = "12 min";
+    if (bookingId) {
+        var foundBooking = null;
+        for (var i = 0; i < bookings.length; i++) {
+            if (bookings[i].id === bookingId) { foundBooking = bookings[i]; break; }
+        }
+        // Find provider who completed this task
+        var providerName = null;
+        var providerPhone = null;
+        for (var i = 0; i < providerTasks.length; i++) {
+            if (providerTasks[i].id === bookingId) {
+                providerName = providerTasks[i].providerName || providerTasks[i].customerName;
+                break;
             }
-        }, 3000);
-    }, 500);
-}
-
-function updateTrackingETA(custLat, custLng, provLat, provLng) {
-    var dx = (custLat - provLat) * 111320;
-    var dy = (custLng - provLng) * 111320 * Math.cos(custLat * Math.PI / 180);
-    var dist = Math.sqrt(dx*dx + dy*dy);
-    var speed = 30; // km/h average
-    var timeMinutes = Math.round((dist / 1000) / speed * 60);
-    if (timeMinutes < 1) timeMinutes = 1;
-    document.getElementById('tracking-eta').textContent = '~' + timeMinutes + ' min (' + (dist/1000).toFixed(1) + ' km)';
-}
-
-function closeTrackingModal() {
-    if (window.__trackingInterval) clearInterval(window.__trackingInterval);
-    document.getElementById('tracking-modal').classList.add('hidden');
+        }
+        if (!providerName) {
+            for (var i = 0; i < completedTasks.length; i++) {
+                if (completedTasks[i].id === bookingId) {
+                    providerName = completedTasks[i].providerName || completedTasks[i].customerName;
+                    providerPhone = completedTasks[i].customerPhone;
+                    break;
+                }
+            }
+        }
+        if (nameEl) nameEl.textContent = providerName || "Provider Assigned";
+        if (contactEl && providerPhone) contactEl.textContent = "\uD83D\uDCDE " + providerPhone;
+        if (serviceEl && foundBooking) serviceEl.textContent = foundBooking.serviceName || "Service";
+    }
+    document.getElementById("tracking-modal").classList.remove("hidden");
 }
 
 function closeModal(id) {
@@ -3895,28 +3384,14 @@ function hasPendingPayment() {
     for (var i = 0; i < pendingPayments.length; i++) {
         if (!pendingPayments[i].paid) return true;
     }
-    for (var i = 0; i < demoPendingPayments.length; i++) {
-        if (!demoPendingPayments[i].paid) return true;
-    }
-    return false;
-}
-
-function hasActiveOrder() {
-    if (!currentUser) return false;
-    var userEmail = currentUser.email || "";
-    var userName = currentUser.name || currentUser.firstname || "";
-    for (var i = 0; i < bookings.length; i++) {
-        if (bookings[i].status === "In Progress" || bookings[i].status === "Pending") return true;
-    }
     return false;
 }
 
 function getNearestPaymentDeadline() {
     var now = Date.now();
     var nearest = null;
-    var allP = pendingPayments.concat(demoPendingPayments);
-    for (var i = 0; i < allP.length; i++) {
-        var p = allP[i];
+    for (var i = 0; i < pendingPayments.length; i++) {
+        var p = pendingPayments[i];
         if (!p.paid && p.completedAt) {
             var deadline = p.completedAt + 36000000;
             if (deadline > now) {
@@ -3934,11 +3409,7 @@ function showCustomerWithdrawModal() {
     document.getElementById("customer-withdraw-fee").textContent = "0 UGX";
     document.getElementById("customer-withdraw-receive").textContent = "0 UGX";
     
-    var blocked = hasPendingPayment() || hasActiveOrder();
-    var msg = "";
-    if (hasPendingPayment()) msg = "You have a pending payment. Please complete it before withdrawing.";
-    else if (hasActiveOrder()) msg = "You have an active order in progress. Withdrawals are blocked until payment is completed.";
-    document.getElementById("withdraw-blocked-msg").textContent = msg;
+    var blocked = hasPendingPayment();
     document.getElementById("withdraw-blocked-msg").classList.toggle("hidden", !blocked);
     document.getElementById("customer-withdraw-btn").disabled = blocked;
     document.getElementById("customer-withdraw-btn").className = blocked ? "w-full bg-gray-400 text-white py-4 rounded-3xl font-semibold cursor-not-allowed" : "w-full bg-amber-600 hover:bg-amber-700 text-white py-4 rounded-3xl font-semibold";
@@ -3954,26 +3425,14 @@ function updateCustomerWithdrawFee() {
     document.getElementById("customer-withdraw-receive").textContent = receive.toLocaleString() + " UGX";
 }
 
-async function processCustomerWithdraw() {
+function processCustomerWithdraw() {
     var amount = parseInt(document.getElementById("customer-withdraw-amount").value) || 0;
     var phone = document.getElementById("customer-withdraw-phone").value.trim();
     
-    if (hasPendingPayment() || hasActiveOrder()) { alert("Withdrawals are blocked while you have an active order or pending payment."); return; }
+    if (hasPendingPayment()) { alert("You have a pending payment. Please settle it before withdrawing."); return; }
     if (amount < 1000) { alert("Minimum withdrawal is 1,000 UGX"); return; }
     if (amount > userBalance) { alert("Insufficient balance."); return; }
     if (!phone || phone.length < 8) { alert("Enter a valid Mobile Money number"); return; }
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); return; }
-    
-    try {
-        var resp = await fetch(HAVENGO_BACKEND_URL + "/api/customer/withdraw", {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: amount })
-        });
-        var data = await resp.json();
-        if (data.session_expired) { handleSessionExpired(); return; }
-        if (!resp.ok) { alert(data.error || "Withdrawal failed"); return; }
-    } catch(e) { alert("Network error. Withdrawal cannot be processed."); return; }
     
     var fee = Math.round(amount * 0.005);
     var netAmount = amount - fee;
@@ -3981,6 +3440,7 @@ async function processCustomerWithdraw() {
     closeModal("customer-withdraw-modal");
     renderProfilePage();
     addNotification("\uD83C\uDFE7", "Withdrawal Initiated", "UGX " + netAmount.toLocaleString() + " sent to " + phone);
+    alert("Withdrawal of UGX " + netAmount.toLocaleString() + " initiated to " + phone);
 }
 
 // Provider withdraw functions
@@ -4011,17 +3471,19 @@ async function processWithdraw() {
     if (amount < 1000) { alert("Minimum withdrawal is 1,000 UGX"); return; }
     if (amount > available) { alert("Insufficient earnings."); return; }
     if (!phone || phone.length < 8) { alert("Enter a valid Mobile Money number"); return; }
-    if (!window.__HAVENGO_JWT__) { alert("Session expired. Please login again."); return; }
 
-    try {
-        var resp = await fetch(HAVENGO_BACKEND_URL + "/api/provider/withdraw", {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: amount })
-        });
-        var data = await resp.json();
-        if (!data.success) { alert(data.error || "Withdrawal failed"); return; }
-    } catch(e) { alert("Network error. Withdrawal cannot be processed."); return; }
+    // Try backend first
+    if (window.__HAVENGO_JWT__) {
+        try {
+            var resp = await fetch(HAVENGO_BACKEND_URL + "/api/provider/withdraw", {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__, "Content-Type": "application/json" },
+                body: JSON.stringify({ amount: amount })
+            });
+            var data = await resp.json();
+            if (!data.success) { alert(data.error || "Withdrawal failed"); return; }
+        } catch(e) { /* fall through to local */ }
+    }
 
     var fee = Math.round(amount * 0.005);
     var netAmount = amount - fee;
@@ -4046,32 +3508,6 @@ function trackPaymentDecline() {
         }, 120000);
     }
     if (!hasPendingPayment()) paymentDeclineTime = null;
-}
-
-// Start payment countdown for demo payments
-function startPaymentCountdown(paymentId) {
-    // Ensure the payment is tracked and a visible countdown starts
-    var found = false;
-    for (var i = 0; i < demoPendingPayments.length; i++) {
-        if (demoPendingPayments[i].id === paymentId) {
-            demoPendingPayments[i].completedAt = Date.now();
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        for (var i = 0; i < pendingPayments.length; i++) {
-            if (pendingPayments[i].id === paymentId) {
-                pendingPayments[i].completedAt = Date.now();
-                found = true;
-                break;
-            }
-        }
-    }
-    // Show payment reminder notification
-    addNotification("\u23F0", "Payment Countdown Started", "Complete payment within 10 hours to avoid auto-deduction.");
-    // Navigate to profile payments tab so user sees the countdown
-    navigateToProfileTab(1);
 }
 
 // Update countdown in profile payments tab
@@ -4449,7 +3885,7 @@ function populateBitmojiSelect() {
         container.classList.remove("border-dashed", "border-gray-300");
         container.classList.add("border-2", "border-emerald-600", "bg-emerald-50");
     } else {
-        container.textContent = "🔧";
+        container.textContent = "👤";
         container.classList.add("border-dashed", "border-gray-300");
         container.classList.remove("border-emerald-600", "bg-emerald-50");
     }
@@ -4478,33 +3914,8 @@ function selectProviderBitmoji(emoji) {
     populateBitmojiSelect();
 }
 
-function showProviderConsentModal() {
-    document.getElementById("consent-agree").checked = false;
-    document.getElementById("consent-accept-btn").disabled = true;
-    document.getElementById("provider-consent-modal").classList.remove("hidden");
-}
-
-document.addEventListener("change", function(e) {
-    if (e.target && e.target.id === "consent-agree") {
-        document.getElementById("consent-accept-btn").disabled = !e.target.checked;
-    }
-});
-
-function providerConsentAccepted() {
-    if (!document.getElementById("consent-agree").checked) {
-        alert("Please agree to the terms and conditions");
-        return;
-    }
-    document.getElementById("provider-consent-modal").classList.add("hidden");
-    submitProviderApplicationImpl();
-}
-
 async function submitProviderApplication(event) {
     event.preventDefault();
-    showProviderConsentModal();
-}
-
-async function submitProviderApplicationImpl() {
     var name = sanitizeInput(document.getElementById("prov-name").value.trim());
     var phone = sanitizeInput(document.getElementById("prov-phone").value.trim());
     var email = sanitizeInput(document.getElementById("prov-email").value.trim());
@@ -4596,7 +4007,7 @@ async function submitProviderApplicationImpl() {
                 selectedBitmoji = null;
                 document.getElementById("bitmoji-select").textContent = "\uD83D\uDC64";
                 navigateTo("provider-tasks");
-                addNotification("\u2705", "Application Submitted", "Your provider account is pending admin verification.");
+                alert("Application submitted successfully! Your account is now pending admin verification. You will be able to login once an administrator approves your application.");
                 return;
             }
             if (data.error) { alert(data.error); return; }
@@ -4604,37 +4015,9 @@ async function submitProviderApplicationImpl() {
         alert("Failed to submit application on server. Please try again.");
         return;
     }
-    alert("Server is currently unavailable. The application could not be submitted. Please try again later.");
-}
 
-function deleteNotification(index) {
-    if (index >= 0 && index < globalNotifications.length) {
-        var notifId = globalNotifications[index].notifId;
-        globalNotifications.splice(index, 1);
-        updateNotifCount();
-        renderNotificationsModal();
-        renderProfileNotifications();
-        saveAppState();
-        if (notifId && window.__HAVENGO_JWT__) {
-            var route = currentAdmin ? "/admin" : (currentLoggedProvider ? "/provider" : "/customer");
-            fetch(HAVENGO_BACKEND_URL + "/api" + route + "/delete-notification/" + notifId, {
-                method: "POST", headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
-            }).catch(function(){});
-        }
-    }
-}
-
-function toggleFavoriteProvider(providerEmail) {
-    var idx = favoriteProviders.indexOf(providerEmail);
-    if (idx > -1) {
-        favoriteProviders.splice(idx, 1);
-    } else {
-        favoriteProviders.push(providerEmail);
-    }
-    saveAppState();
-    renderAllProviderLists();
-    renderProfilePage();
-}
+    // Backend unavailable — online-only, cannot submit
+    alert("Cannot submit application: Server is currently unavailable. Please try again later.");
 
 // ============================================================
 // PROVIDER LISTS ON SERVICES PAGE
@@ -4644,7 +4027,7 @@ function renderAllProviderLists() {
     var providerMap = {
         "cleaning-providers": [], "spa-providers": [], "family-providers": [], "errands-providers": [],
         "catering-providers": [], "kids-providers": [], "appliance-providers": [], "gardening-providers": [],
-        "hair-providers": [], "event-providers": [], "auto-providers": [], "nursing-providers": []
+        "hair-providers": [], "event-providers": [], "auto-providers": []
     };
 
     // Calculate provider ratings from customer reviews
@@ -4704,15 +4087,13 @@ function renderAllProviderLists() {
         for (var i = 0; i < providers.length; i++) {
             var p = providers[i];
             var avgRating = getAvgRating(p.name);
-            var displayRating = avgRating !== null ? avgRating : 0;
+            var displayRating = avgRating !== null ? avgRating : (p.rating || 4.5);
             var stars = "";
             var r = Math.floor(displayRating);
             for (var s = 0; s < r; s++) stars += "\u2605";
             var jobCount = providerJobCounts[p.name] || p.jobs || 0;
             var serviceId = key.replace("-providers", "");
             var displayName = p.business_name || p.businessName || p.name;
-            var isFav = favoriteProviders.indexOf(p.email || p.name) > -1;
-            var favIcon = isFav ? "fa-solid fa-heart text-red-500" : "fa-regular fa-heart text-gray-400";
             html += "<div class=\"flex items-center justify-between\">" +
                 "<div class=\"flex items-center gap-3\">" +
                 "<div class=\"bitmoji\">" + (p.bitmoji || "\uD83D\uDC64") + "</div>" +
@@ -4721,7 +4102,6 @@ function renderAllProviderLists() {
                 "<span class=\"text-yellow-500\">" + stars + "</span>" +
                 "<span>" + displayRating.toFixed(1) + "</span>" +
                 "<span>\u2022 " + jobCount + " jobs</span></div></div></div>" +
-                "<button onclick=\"event.stopPropagation(); toggleFavoriteProvider('" + (p.email || p.name).replace(/'/g,"\\'") + "')\" class=\"text-lg\"><i class=\"" + favIcon + "\"></i></button>" +
                 "<button onclick=\"selectService('" + serviceId + "','" + displayName.replace(/'/g,"\\'") + "')\" class=\"mt-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-sm font-medium transition-all\"><i class=\"fa-solid fa-bookmark mr-1\"></i> Book Now</button></div>";
         }
         el.innerHTML = html;
@@ -4932,9 +4312,8 @@ function checkAutoPayment() {
     var now = new Date().getTime();
     var changed = false;
     var customerPendingCount = 0;
-    var allP = pendingPayments.concat(demoPendingPayments);
-    for (var i = 0; i < allP.length; i++) {
-        var pp = allP[i];
+    for (var i = 0; i < pendingPayments.length; i++) {
+        var pp = pendingPayments[i];
         if (!pp.paid && pp.completedAt) {
             var elapsed = now - pp.completedAt;
             // 2-min reminder (only once)
@@ -4944,9 +4323,8 @@ function checkAutoPayment() {
             }
             // 10-hour auto-payment
             if (elapsed >= 36000000) {
-                var bal = isDemoMode ? demoUserBalance : userBalance;
-                if (bal >= pp.amount) {
-                    if (isDemoMode) { demoUserBalance -= pp.amount; } else { userBalance -= pp.amount; }
+                if (userBalance >= pp.amount) {
+                    userBalance -= pp.amount;
                     pp.paid = true;
                     var providerShare = Math.round(pp.amount * 0.85);
                     var systemShare = pp.amount - providerShare;
@@ -4959,7 +4337,7 @@ function checkAutoPayment() {
                     addNotification("\u23F0", "Auto-Payment Processed", "UGX " + pp.amount.toLocaleString() + " auto-deducted for " + pp.taskName + " (10-hour window expired)");
                 }
             }
-            if (currentUser && pp.customerName === (currentUser.name || currentUser.email || currentUser.phone)) customerPendingCount++;
+            if (currentUser) customerPendingCount++;
         }
     }
     // Update pending count badge in profile
@@ -4999,9 +4377,7 @@ async function fetchBackendNotifications() {
             if (notifs && notifs.length > 0) {
                 for (var ni = 0; ni < notifs.length; ni++) {
                     var n = notifs[ni];
-                    var exists = globalNotifications.some(function(gn) {
-                        return gn.notifId === n.id || (gn.title === n.title && gn.message === n.message);
-                    });
+                    var exists = globalNotifications.some(function(gn) { return gn.notifId === n.id; });
                     if (!exists) {
                         addNotification(n.icon || "\uD83D\uDCE2", n.title || "Notification", n.message || "", n.id);
                     }
@@ -5020,6 +4396,17 @@ async function fetchBackendNotifications() {
 // ============================================================
 
 window.onload = function() {
+    // Restore dark mode
+    if (localStorage.getItem("havengo-dark") === "1") {
+        document.documentElement.classList.add("dark");
+        var stars = document.getElementById("stars-container");
+        if (stars) stars.classList.remove("hidden");
+    }
+    // Restore theme
+    var savedTheme = localStorage.getItem("havengo-theme");
+    if (savedTheme && savedTheme !== "default") {
+        document.documentElement.classList.add("theme-" + savedTheme);
+    }
     createStars();
     startHeroSlider();
     renderBlogPosts();
@@ -5032,14 +4419,6 @@ window.onload = function() {
 
     // All data-dependent renders (bookings, profile, provider lists, notif count)
     // happen AFTER state restore in the async block below to prevent flash of empty state
-
-    // Request user location
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(pos) {
-            window.__userLat = pos.coords.latitude;
-            window.__userLng = pos.coords.longitude;
-        }, function() {}, { enableHighAccuracy: true, timeout: 10000 });
-    }
 
     // 10-hour auto-payment check (runs every 60 seconds)
     setInterval(checkAutoPayment, 60000);
@@ -5098,8 +4477,11 @@ window.onload = function() {
             updateNotifCount();
         }
         renderAllProviderLists();
-        // Restore last viewed page (default to home)
-        navigateTo(window.__currentPage || "home");
+        // Restore last visited page
+        if (window.__currentPage) {
+            var pageEl = document.getElementById(window.__currentPage);
+            if (pageEl) navigateTo(window.__currentPage);
+        }
     })();
 
     // Auto-save every 10 seconds
@@ -5125,16 +4507,16 @@ window.onload = function() {
 
     fetchVerifiedProviders();
 
-    // Poll verified providers every 15s for cross-browser sync
-    setInterval(fetchVerifiedProviders, 15000);
+    // Poll verified providers every 30s for cross-browser sync
+    setInterval(fetchVerifiedProviders, 30000);
 
-    // Poll customer bookings every 15s when logged in
+    // Poll customer bookings every 30s when logged in
     setInterval(function() {
         if (currentUser && window.__HAVENGO_JWT__) {
             fetchCustomerBookings();
             fetchBackendNotifications();
         }
-    }, 15000);
+    }, 30000);
 };
 </script>
 </body>
