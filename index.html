@@ -251,6 +251,10 @@
                         <button type="button" onclick="verifyCode()" id="verify-code-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-4 rounded-2xl text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>Verify</button>
                     </div>
                     <div id="verify-status" class="text-sm mt-2"></div>
+                    <div id="code-display" class="hidden mt-3 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
+                        <p class="text-xs text-emerald-700 mb-1">Your verification code</p>
+                        <p id="code-display-value" class="text-4xl font-bold text-emerald-700 tracking-[8px]"></p>
+                    </div>
                 </div>
                 <div><label class="font-medium block mb-2">Create Password</label><input id="signup-password" type="password" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
                 <div><label class="font-medium block mb-2">Confirm Password</label><input id="signup-confirm-password" type="password" class="w-full border rounded-2xl px-5 py-4 outline-none focus:border-emerald-600"></div>
@@ -1108,8 +1112,10 @@ async function sendVerificationCode() {
         var data = await resp.json();
         if (data.success) {
             document.getElementById('verify-code-btn').disabled = false;
-            document.getElementById('verify-status').textContent = '\u2705 Code sent! Check your ' + type + '. (Dev: ' + data.code + ')';
+            document.getElementById('verify-status').textContent = '\u2705 Code sent to your ' + type;
             document.getElementById('verify-status').className = 'text-sm mt-2 text-emerald-600';
+            document.getElementById('code-display-value').textContent = data.code;
+            document.getElementById('code-display').classList.remove('hidden');
         } else {
             document.getElementById('verify-status').textContent = '\u274c ' + (data.error || 'Failed to send code');
             document.getElementById('verify-status').className = 'text-sm mt-2 text-red-600';
@@ -1140,6 +1146,7 @@ async function verifyCode() {
             document.getElementById('verify-status').className = 'text-sm mt-2 text-emerald-600 font-bold';
             document.getElementById('verify-code-btn').disabled = true;
             document.getElementById('verification-code').disabled = true;
+            document.getElementById('code-display').classList.add('hidden');
         } else {
             document.getElementById('verify-status').textContent = '\u274c ' + (data.error || 'Invalid code');
             document.getElementById('verify-status').className = 'text-sm mt-2 text-red-600';
