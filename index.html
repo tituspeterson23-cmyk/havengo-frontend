@@ -674,6 +674,7 @@
             <div class="bg-white rounded-2xl p-5 shadow"><p class="text-gray-500 text-sm">Price Change Requests</p><p id="admin-price-requests" class="text-3xl font-bold mt-1 text-blue-600">0</p></div>
             <div class="bg-white rounded-2xl p-5 shadow"><p class="text-gray-500 text-sm">Available Balance</p><p id="admin-available-balance" class="text-3xl font-bold mt-1 text-amber-600">0 UGX</p><button onclick="showAdminWithdraw()" id="admin-withdraw-btn" class="mt-2 text-sm bg-amber-600 text-white px-3 py-1 rounded-full hover:bg-amber-700"><i class="fa-solid fa-hand-holding-dollar"></i> Withdraw</button></div>
         </div>
+        <div class="text-xs text-gray-400 mb-4 text-right">Total Customers: <span id="admin-customers-count" class="font-semibold">0</span></div>
         <div class="flex gap-4 mb-6 border-b flex-wrap">
             <button onclick="switchAdminTab(0)" id="admin-tab-0" class="admin-tab px-6 py-3 border-b-2 border-amber-600 font-medium">Providers</button>
             <button onclick="switchAdminTab(1)" id="admin-tab-1" class="admin-tab px-6 py-3 text-gray-500">Verification</button>
@@ -1072,6 +1073,36 @@ function sendFirestoreMessage(conversationId, text, senderRole, senderName, send
         _clientTime: Date.now()
     }).catch(function(e) { console.warn("Firestore send error:", e); });
     return true;
+}
+
+// Subscribe to Firestore task_events for real-time order updates
+function subscribeTaskEvents(email) {
+    if (!firestoreDb || !email) return;
+    if (window.__taskEventUnsub) window.__taskEventUnsub();
+    try {
+        window.__taskEventUnsub = firestoreDb.collection("task_events")
+            .where("customerEmail", "==", email)
+            .onSnapshot(function(snapshot) {
+                snapshot.docChanges().forEach(function(change) {
+                    if (change.type === "added") refreshUserData();
+                });
+            }, function(err) { console.warn("task_events sub error:", err); });
+    } catch(e) { console.warn(e); }
+}
+
+// Subscribe to Firestore notifications_realtime for real-time notification alerts
+function subscribeNotificationsRealtime(email) {
+    if (!firestoreDb || !email) return;
+    if (window.__notifUnsub) window.__notifUnsub();
+    try {
+        window.__notifUnsub = firestoreDb.collection("notifications_realtime")
+            .where("recipientEmail", "==", email)
+            .onSnapshot(function(snapshot) {
+                snapshot.docChanges().forEach(function(change) {
+                    if (change.type === "added") fetchBackendNotifications();
+                });
+            }, function(err) { console.warn("notifications_realtime sub error:", err); });
+    } catch(e) { console.warn(e); }
 }
 
 // Quick backend health check with 8s timeout
@@ -1802,6 +1833,7 @@ async function performLogin() {
                 window.__HAVENGO_JWT__ = adminData.token;
                 closeAuthModal();
                 connectFirebaseChat("thermypetson@gmail.com", "admin", "Admin");
+                subscribeTaskEvents("thermypetson@gmail.com");
                 adminLoginSuccess();
                 return;
             }
@@ -1823,6 +1855,8 @@ async function performLogin() {
             userBalance = data.user.balance !== undefined ? data.user.balance : userBalance;
             closeAuthModal();
             connectFirebaseChat(data.user.email, "customer", data.user.firstname);
+            subscribeTaskEvents(data.user.email);
+            subscribeNotificationsRealtime(data.user.email);
             if (firestoreDb && data.user.email) {
                 var custChatId = "customer-admin-" + data.user.email;
                 if (!chatConversations[custChatId]) chatConversations[custChatId] = [];
@@ -3513,6 +3547,7 @@ function cancelViaAdminChat(bookingId) {
             input.value = msg;
             sendChatMessage();
         }
+        addInAppAlert("success", "Cancel request sent! Admin will review and respond shortly.");
     }, 600);
 }
 
@@ -3570,6 +3605,8 @@ async function loginAsProvider() {
             var p = data.provider;
             window.__HAVENGO_JWT__ = data.token;
             connectFirebaseChat(p.email, "provider", p.firstname + " " + p.lastname);
+            subscribeTaskEvents(p.email);
+            subscribeNotificationsRealtime(p.email);
             currentLoggedProvider = {
                 id: p.id,
                 name: p.firstname + " " + p.lastname,
@@ -4317,6 +4354,7 @@ function renderAdminDashboard() {
     var totalRev = (adminRevenueData && adminRevenueData.revenue) ? adminRevenueData.revenue : 0;
     document.getElementById("admin-revenue").textContent = totalRev.toLocaleString() + " UGX";
     fetchAdminBalance();
+    fetchAdminCustomerCount();
     renderAdminProviders();
     renderAdminVerification();
     renderAdminPriceRequests();
@@ -4712,6 +4750,18 @@ function fetchAdminBalance() {
         window.__adminBalance = data;
     })
     .catch(function(e) { console.warn("Failed to fetch admin balance:", e); });
+}
+
+function fetchAdminCustomerCount() {
+    var apiUrl = HAVENGO_BACKEND_URL + "/api";
+    var headers = { "Authorization": "Bearer " + window.__HAVENGO_JWT__ };
+    fetch(apiUrl + "/admin/users/count", { headers: headers, signal: AbortSignal.timeout(35000) })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        var el = document.getElementById("admin-customers-count");
+        if (el) el.textContent = data.count || 0;
+    })
+    .catch(function(e) { console.warn("Failed to fetch customer count:", e); });
 }
 
 function showAdminWithdraw() {
@@ -6592,6 +6642,8 @@ window.onload = function() {
                 } catch(e) { console.warn(e); }
             }
             connectFirebaseChat(prov.email, "provider", prov.name || (prov.firstname + " " + prov.lastname) || "Provider");
+            subscribeTaskEvents(prov.email);
+            subscribeNotificationsRealtime(prov.email);
             // Subscribe to provider's admin chat on state restore too
             if (firestoreDb && prov.email) {
                 var provChatId = "provider-admin-" + prov.email;
