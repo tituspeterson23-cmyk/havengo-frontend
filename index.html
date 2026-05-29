@@ -1026,6 +1026,18 @@ function _doSubscribe(conversationId, callback) {
                 });
             });
             msgs.sort(function(a, b) { return a.time - b.time; });
+            
+            // Check for new messages and show alert
+            if (window.__lastMessageCounts === undefined) window.__lastMessageCounts = {};
+            var prevCount = window.__lastMessageCounts[convId] || 0;
+            if (msgs.length > prevCount && prevCount > 0) {
+                // New messages arrived - show alert
+                var newCount = msgs.length - prevCount;
+                var senderName = msgs[msgs.length - 1].senderName || "Someone";
+                addInAppAlert("info", "New message from " + senderName + " (+" + newCount + ")");
+            }
+            window.__lastMessageCounts[convId] = msgs.length;
+            
             callback(msgs);
         }, function(error) {
             console.warn("Firestore subscription error:", error);
