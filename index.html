@@ -674,7 +674,6 @@
             <div class="bg-white rounded-2xl p-5 shadow"><p class="text-gray-500 text-sm">Price Change Requests</p><p id="admin-price-requests" class="text-3xl font-bold mt-1 text-blue-600">0</p></div>
             <div class="bg-white rounded-2xl p-5 shadow"><p class="text-gray-500 text-sm">Available Balance</p><p id="admin-available-balance" class="text-3xl font-bold mt-1 text-amber-600">0 UGX</p><button onclick="showAdminWithdraw()" id="admin-withdraw-btn" class="mt-2 text-sm bg-amber-600 text-white px-3 py-1 rounded-full hover:bg-amber-700"><i class="fa-solid fa-hand-holding-dollar"></i> Withdraw</button></div>
         </div>
-        <div class="text-xs text-gray-400 mb-4 text-right">Total Customers: <span id="admin-customers-count" class="font-semibold">0</span></div>
         <div class="flex gap-4 mb-6 border-b flex-wrap">
             <button onclick="switchAdminTab(0)" id="admin-tab-0" class="admin-tab px-6 py-3 border-b-2 border-amber-600 font-medium">Providers</button>
             <button onclick="switchAdminTab(1)" id="admin-tab-1" class="admin-tab px-6 py-3 text-gray-500">Verification</button>
@@ -1026,18 +1025,6 @@ function _doSubscribe(conversationId, callback) {
                 });
             });
             msgs.sort(function(a, b) { return a.time - b.time; });
-            
-            // Check for new messages and show alert
-            if (window.__lastMessageCounts === undefined) window.__lastMessageCounts = {};
-            var prevCount = window.__lastMessageCounts[convId] || 0;
-            if (msgs.length > prevCount && prevCount > 0) {
-                // New messages arrived - show alert
-                var newCount = msgs.length - prevCount;
-                var senderName = msgs[msgs.length - 1].senderName || "Someone";
-                addInAppAlert("info", "New message from " + senderName + " (+" + newCount + ")");
-            }
-            window.__lastMessageCounts[convId] = msgs.length;
-            
             callback(msgs);
         }, function(error) {
             console.warn("Firestore subscription error:", error);
@@ -1085,36 +1072,6 @@ function sendFirestoreMessage(conversationId, text, senderRole, senderName, send
         _clientTime: Date.now()
     }).catch(function(e) { console.warn("Firestore send error:", e); });
     return true;
-}
-
-// Subscribe to Firestore task_events for real-time order updates
-function subscribeTaskEvents(email) {
-    if (!firestoreDb || !email) return;
-    if (window.__taskEventUnsub) window.__taskEventUnsub();
-    try {
-        window.__taskEventUnsub = firestoreDb.collection("task_events")
-            .where("customerEmail", "==", email)
-            .onSnapshot(function(snapshot) {
-                snapshot.docChanges().forEach(function(change) {
-                    if (change.type === "added") refreshUserData();
-                });
-            }, function(err) { console.warn("task_events sub error:", err); });
-    } catch(e) { console.warn(e); }
-}
-
-// Subscribe to Firestore notifications_realtime for real-time notification alerts
-function subscribeNotificationsRealtime(email) {
-    if (!firestoreDb || !email) return;
-    if (window.__notifUnsub) window.__notifUnsub();
-    try {
-        window.__notifUnsub = firestoreDb.collection("notifications_realtime")
-            .where("recipientEmail", "==", email)
-            .onSnapshot(function(snapshot) {
-                snapshot.docChanges().forEach(function(change) {
-                    if (change.type === "added") fetchBackendNotifications();
-                });
-            }, function(err) { console.warn("notifications_realtime sub error:", err); });
-    } catch(e) { console.warn(e); }
 }
 
 // Quick backend health check with 8s timeout
@@ -1845,7 +1802,6 @@ async function performLogin() {
                 window.__HAVENGO_JWT__ = adminData.token;
                 closeAuthModal();
                 connectFirebaseChat("thermypetson@gmail.com", "admin", "Admin");
-                subscribeTaskEvents("thermypetson@gmail.com");
                 adminLoginSuccess();
                 return;
             }
@@ -1867,8 +1823,6 @@ async function performLogin() {
             userBalance = data.user.balance !== undefined ? data.user.balance : userBalance;
             closeAuthModal();
             connectFirebaseChat(data.user.email, "customer", data.user.firstname);
-            subscribeTaskEvents(data.user.email);
-            subscribeNotificationsRealtime(data.user.email);
             if (firestoreDb && data.user.email) {
                 var custChatId = "customer-admin-" + data.user.email;
                 if (!chatConversations[custChatId]) chatConversations[custChatId] = [];
@@ -3521,7 +3475,7 @@ function renderBookings() {
             "<div class=\"flex gap-3 mt-4 pt-4 border-t\">" +
             (b.status !== "Pending" && b.providerName ? "<a href=\"tel:" + (function(){ for(var pi=0;pi<registeredProviders.length;pi++){var rp=registeredProviders[pi];if(rp.name===b.providerName||rp.business_name===b.providerName||rp.businessName===b.providerName){return (rp.phone||'').replace(/[^0-9+]/g,'');}}return '';})() + "\" class=\"inline-block text-sm bg-emerald-600 text-white px-4 py-2 rounded-2xl no-underline\"><i class=\"fa-solid fa-phone\"></i> Call</a>" : "") +
             "<button onclick=\"startTracking(" + b.id + ")\" class=\"text-sm bg-emerald-600 text-white px-4 py-2 rounded-2xl\"><i class=\"fa-solid fa-location-dot\"></i> Track</button>" +
-            (b.status === "Pending" ? "<button onclick=\"openBookingSupportChat(" + b.id + ")\" class=\"text-sm bg-blue-500 text-white px-4 py-2 rounded-2xl\"><i class=\"fa-solid fa-headset\"></i> Contact Support</button>" : "<button onclick=\"openChatWithProvider(" + b.id + ")\" class=\"text-sm border px-4 py-2 rounded-2xl\"><i class=\"fa-solid fa-comment\"></i> Chat</button>") +
+            (b.status === "Pending" ? "<button onclick=\"cancelViaAdminChat(" + b.id + ")\" class=\"text-sm bg-blue-500 text-white px-4 py-2 rounded-2xl\"><i class=\"fa-solid fa-headset\"></i> Contact Support</button>" : "<button onclick=\"openChatWithProvider(" + b.id + ")\" class=\"text-sm border px-4 py-2 rounded-2xl\"><i class=\"fa-solid fa-comment\"></i> Chat</button>") +
             (b.status === "Completed" ? "<button onclick=\"rateBooking(" + b.id + ")\" class=\"text-sm bg-yellow-500 text-white px-4 py-2 rounded-2xl\"><i class=\"fa-solid fa-star\"></i> Rate</button>" : "") +
             (b.status === "Completed" ? "<button onclick=\"showPaymentsPending()\" class=\"text-sm bg-emerald-600 text-white px-4 py-2 rounded-2xl\"><i class=\"fa-solid fa-credit-card\"></i> Pay Now</button>" : "") +
             (b.status === "Pending" || b.status === "In Progress" ? "<button onclick=\"cancelViaAdminChat(" + b.id + ")\" class=\"text-sm bg-red-500 text-white px-4 py-2 rounded-2xl\"><i class=\"fa-solid fa-headset\"></i> Request Cancel via Support</button>" : "") + "</div></div>";
@@ -3531,60 +3485,20 @@ function renderBookings() {
 
 function cancelViaAdminChat(bookingId) {
     if (!currentUser || !currentUser.email) { addInAppAlert("info", "Please login first"); return; }
-    // Open the main chat modal with admin conversation
-    var adminConvId = "customer-admin-" + currentUser.email;
-    currentChatTaskId = adminConvId;
-    currentChatTaskContext = null;
-    if (!chatConversations[adminConvId]) chatConversations[adminConvId] = [];
-    var task = null;
-    for (var i = 0; i < bookings.length; i++) {
-        if (bookings[i].id === bookingId) { task = bookings[i]; break; }
-    }
-    var taskLabel = task ? (task.serviceName || "Task #" + bookingId) : "Task #" + bookingId;
-    document.getElementById("chat-provider-name").textContent = "Admin Support (re: " + taskLabel + ")";
-    document.getElementById("chat-provider-avatar").textContent = "\uD83D\uDC6E";
-    if (firestoreDb) {
-        subscribeToChat(adminConvId, function(msgs) {
-            chatConversations[adminConvId] = msgs;
-            renderChatMessages(msgs, "customer");
-        });
-    }
-    renderChatMessages(chatConversations[adminConvId], "customer");
-    document.getElementById("chat-modal").classList.remove("hidden");
-    // Auto-send cancel request after a brief moment
+    openCustomerAdminChat();
+    // Auto-send a cancel request message
     setTimeout(function() {
+        var task = null;
+        for (var i = 0; i < bookings.length; i++) {
+            if (bookings[i].id === bookingId) { task = bookings[i]; break; }
+        }
         var msg = "I would like to cancel order #" + bookingId + (task ? " (" + task.serviceName + ")" : "") + ". Please assist.";
-        var input = document.getElementById("chat-input");
+        var input = document.getElementById("customer-admin-chat-input");
         if (input) {
             input.value = msg;
-            sendChatMessage();
+            sendCustomerAdminMessage();
         }
-        addInAppAlert("success", "Cancel request sent! Admin will review and respond shortly.");
-    }, 600);
-}
-
-function openBookingSupportChat(bookingId) {
-    if (!currentUser || !currentUser.email) { addInAppAlert("info", "Please login first"); return; }
-    var adminConvId = "customer-admin-" + currentUser.email;
-    currentChatTaskId = adminConvId;
-    currentChatTaskContext = null;
-    if (!chatConversations[adminConvId]) chatConversations[adminConvId] = [];
-    var task = null;
-    for (var i = 0; i < bookings.length; i++) {
-        if (bookings[i].id === bookingId) { task = bookings[i]; break; }
-    }
-    var taskLabel = task ? (task.serviceName || "Task #" + bookingId) : "Task #" + bookingId;
-    document.getElementById("chat-provider-name").textContent = "Admin Support (re: " + taskLabel + ")";
-    document.getElementById("chat-provider-avatar").textContent = "\uD83D\uDC6E";
-    if (firestoreDb) {
-        subscribeToChat(adminConvId, function(msgs) {
-            chatConversations[adminConvId] = msgs;
-            renderChatMessages(msgs, "customer");
-        });
-    }
-    renderChatMessages(chatConversations[adminConvId], "customer");
-    document.getElementById("chat-modal").classList.remove("hidden");
-    addInAppAlert("success", "Connected to Admin Support. Type your message below.");
+    }, 500);
 }
 
 // ============================================================
@@ -3617,8 +3531,6 @@ async function loginAsProvider() {
             var p = data.provider;
             window.__HAVENGO_JWT__ = data.token;
             connectFirebaseChat(p.email, "provider", p.firstname + " " + p.lastname);
-            subscribeTaskEvents(p.email);
-            subscribeNotificationsRealtime(p.email);
             currentLoggedProvider = {
                 id: p.id,
                 name: p.firstname + " " + p.lastname,
@@ -4366,7 +4278,6 @@ function renderAdminDashboard() {
     var totalRev = (adminRevenueData && adminRevenueData.revenue) ? adminRevenueData.revenue : 0;
     document.getElementById("admin-revenue").textContent = totalRev.toLocaleString() + " UGX";
     fetchAdminBalance();
-    fetchAdminCustomerCount();
     renderAdminProviders();
     renderAdminVerification();
     renderAdminPriceRequests();
@@ -4648,36 +4559,12 @@ function renderAdminOrders() {
             (isCancelled ? "<span class=\"text-sm text-red-600 font-medium\"><i class=\"fa-solid fa-circle-exclamation\"></i> Provider rejected — reassign or remove</span>" : "") +
             "<select id=\"admin-reassign-select-" + t.id + "\" class=\"border rounded-xl px-3 py-2 text-sm\"><option value=\"\">Select provider...</option>" + provList + "</select>" +
             "<button onclick=\"adminReassignTask(" + t.id + ")\" class=\"bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-arrow-right\"></i> Assign</button>" +
-            (!isCancelled && t.status !== "completed" ? "<button onclick=\"adminCancelTask(" + t.id + ")\" class=\"bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-ban\"></i> Cancel</button>" : "") +
             (isCancelled ? "<button onclick=\"adminRemoveCancelledTask(" + t.id + ")\" class=\"bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-trash-can\"></i> Remove</button>" : "") +
             (t.customerPhone ? "<a href=\"tel:" + t.customerPhone.replace(/[^0-9+]/g,'') + "\" class=\"inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm no-underline\"><i class=\"fa-solid fa-phone\"></i> Call</a>" : "") +
             "<button onclick=\"openAdminTaskChat(" + t.id + ",'" + (t.customerName || 'Customer').replace(/'/g,"\\'") + "')\" class=\"bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-sm\"><i class=\"fa-solid fa-comment\"></i> Chat</button>" +
             "</div></div>";
     }
     list.innerHTML = html;
-}
-
-function adminCancelTask(taskId) {
-    showAppConfirm("Cancel order #" + taskId + "? The customer and provider will be notified.", function(confirmed) {
-        if (!confirmed) return;
-        var apiUrl = HAVENGO_BACKEND_URL + "/api";
-        if (window.__HAVENGO_JWT__) {
-            fetch(apiUrl + "/admin/tasks/cancel/" + taskId, {
-                method: "POST",
-                headers: { "Authorization": "Bearer " + window.__HAVENGO_JWT__ }
-            }).then(function(r) { return r.json(); }).then(function(data) {
-                if (data.success) {
-                    for (var i = 0; i < adminTasks.length; i++) {
-                        if (adminTasks[i].id === taskId) { adminTasks[i].status = "cancelled"; break; }
-                    }
-                    renderAdminOrders();
-                    addInAppAlert("success", "Order #" + taskId + " cancelled");
-                } else {
-                    addInAppAlert("error", data.error || "Failed to cancel order");
-                }
-            }).catch(function(e) { console.warn(e); addInAppAlert("error", "Failed to cancel order"); });
-        }
-    });
 }
 
 function adminRemoveCancelledTask(taskId) {
@@ -4762,18 +4649,6 @@ function fetchAdminBalance() {
         window.__adminBalance = data;
     })
     .catch(function(e) { console.warn("Failed to fetch admin balance:", e); });
-}
-
-function fetchAdminCustomerCount() {
-    var apiUrl = HAVENGO_BACKEND_URL + "/api";
-    var headers = { "Authorization": "Bearer " + window.__HAVENGO_JWT__ };
-    fetch(apiUrl + "/admin/users/count", { headers: headers, signal: AbortSignal.timeout(35000) })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        var el = document.getElementById("admin-customers-count");
-        if (el) el.textContent = data.count || 0;
-    })
-    .catch(function(e) { console.warn("Failed to fetch customer count:", e); });
 }
 
 function showAdminWithdraw() {
@@ -6479,6 +6354,7 @@ function checkAutoPayment() {
 // ============================================================
 
 var _notifHash = "";
+var _notifInitialFetch = false;
 async function fetchBackendNotifications() {
     var jwt = window.__HAVENGO_JWT__;
     if (!jwt) return;
@@ -6498,12 +6374,19 @@ async function fetchBackendNotifications() {
             var notifs = await resp.json();
             var newHash = JSON.stringify(notifs);
             if (newHash === _notifHash) return;
+            var showPopups = _notifInitialFetch;
             _notifHash = newHash;
+            _notifInitialFetch = true;
             for (var ni = 0; ni < notifs.length; ni++) {
                 var n = notifs[ni];
                 var exists = globalNotifications.some(function(gn) { return gn.notifId === n.id; });
                 if (!exists) {
                     addNotification(n.icon || "\uD83D\uDCE2", n.title || "Notification", n.message || "", n.id);
+                    if (showPopups) {
+                        var alertMsg = (n.icon || "") + " " + (n.title || "Notification");
+                        if (n.message) alertMsg += ": " + n.message;
+                        addInAppAlert("info", alertMsg);
+                    }
                 }
             }
         }
@@ -6654,8 +6537,6 @@ window.onload = function() {
                 } catch(e) { console.warn(e); }
             }
             connectFirebaseChat(prov.email, "provider", prov.name || (prov.firstname + " " + prov.lastname) || "Provider");
-            subscribeTaskEvents(prov.email);
-            subscribeNotificationsRealtime(prov.email);
             // Subscribe to provider's admin chat on state restore too
             if (firestoreDb && prov.email) {
                 var provChatId = "provider-admin-" + prov.email;
